@@ -71,13 +71,47 @@ set apply_infoa;
 run;
 
 
-/*ÒÔÊ×´ÎÂ¼Èë¸´ºËÍê³ÉÊ±¼ä×÷Îª½ø¼şÊ±¼ä*/
+/*/*ÒÔÊ×´ÎÂ¼Èë¸´ºËÍê³ÉÊ±¼ä×÷Îª½ø¼şÊ±¼ä*/*/
+/*data apply_time;*/
+/*set approval.act_opt_log(where = ((task_Def_Name_ = "Â¼Èë¸´ºË" and action_ = "COMPLETE") or  task_Def_Name_="³õÉó")); /*action_±ØĞëÊÇCOMPLETEµÄ²ÅÊÇ½øÈëÉóÅúµÄ£¬JUMPµÄÊÇ¸´ºËÊ±È¡Ïû»ò¾Ü¾ø*/*/
+/*keep bussiness_key_ create_time_;*/
+/*rename bussiness_key_ = apply_code create_time_ = apply_time;*/
+/*run;*/
+/*proc sort data = apply_time nodupkey; */
+/*by apply_code;
+/*run;*/
+
+*¡¾½ø¼ş¡¿;
+/*ÒÔÊ×´ÎÂ¼Èë¸´ºËÍê³ÉÊ±¼ä×÷Îª½ø¼şÊ±¼ä,EÆï´ûÒÔÊ×´Î½øÈë³õÉóÊ±¼äÎª½ø¼şÊ±¼ä*/
+proc sql;
+create table apply_t as 
+select a.*,b.desired_product from approval.act_opt_log as a
+left join approval.apply_info as b on a.bussiness_key_=b.APPLY_CODE;
+quit;
+data apply_t2;
+set apply_t;
+if desired_product^='Eqidai' then do;
+	if task_Def_Name_ = "Â¼Èë¸´ºË" and action_ = "COMPLETE" then ½ø¼ş=1;
+end;
+else do;
+	if task_Def_Name_ = "³õÉó" then ½ø¼ş=1;
+end;
+run;
 data apply_time;
-set approval.act_opt_log(where = (task_Def_Name_ = "Â¼Èë¸´ºË" and action_ = "COMPLETE")); /*action_±ØĞëÊÇCOMPLETEµÄ²ÅÊÇ½øÈëÉóÅúµÄ£¬JUMPµÄÊÇ¸´ºËÊ±È¡Ïû»ò¾Ü¾ø*/
-keep bussiness_key_ create_time_;
+set apply_t2;
+if ½ø¼ş=1;
+format ½ø¼şdate YYMMDD10.;
+½ø¼şdate=datepart(create_time_);
+½ø¼şÔÂ·İ= put(½ø¼şdate, yymmn6.);
+keep bussiness_key_ create_time_ ½ø¼şdate;
 rename bussiness_key_ = apply_code create_time_ = apply_time;
 run;
+proc sort data = apply_time; by apply_code ½ø¼şdate; run;
 proc sort data = apply_time nodupkey; by apply_code; run;
+
+
+
+
 proc sort data=apply_info(where=(ÓªÒµ²¿^="¹«Ë¾ÇşµÀ")) nodupkey ;by apply_code ÓªÒµ²¿;run;
 data appMid.apply_time;
 merge apply_time(in = a) apply_info(in = b);
@@ -351,6 +385,7 @@ data account_info;
 set account.account_info(keep = contract_no ch_name branch_code fund_channel_code product_name id_number account_status contract_amount remain_capital  
 							period complete_period curr_period loan_date LAST_REPAY_DATE TEAM_MANAGER CUSTOMER_MANAGER BORROWER_TEL_ONE);
 apply_code = tranwrd(contract_no, "C", "PL");
+if contract_no='C2017102018470822293088' then account_status='0003';
 run;
 proc sort data = account_info nodupkey; by apply_code ; run;
 proc sort data = apply_time ; by apply_code ÓªÒµ²¿; run;
@@ -1341,12 +1376,17 @@ if contract_no="C152385455472102300010153" and cut_date=mdy(03,24,2019) then »¹¿
 if contract_no="C2017092111435555254662" and cut_date=mdy(03,22,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
 if contract_no="C2018012219070532415053" and cut_date=mdy(03,24,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
 
+if contract_no="C2017051216070171982298" and cut_date=mdy(03,23,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
+if contract_no="C2017112014374389197751" and cut_date=mdy(03,24,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
+
 
 if contract_no="C2017092117533445057225" and cut_date=mdy(3,13,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 
 if contract_no="C2017070420050177544700" and cut_date=mdy(3,22,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017072515281323868676" and cut_date=mdy(3,15,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017080210272523240535" and cut_date=mdy(3,20,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+
+if contract_no="C2017110613581169751106" and cut_date=mdy(3,24,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 
 
 rename outstanding=´û¿îÓà¶î outstanding_capital=´û¿îÓà¶î_Ê£Óà±¾½ğ²¿·Ö;
@@ -1397,6 +1437,9 @@ if contract_no="C152385455472102300010153" and cut_date=mdy(03,24,2019) then »¹¿
 if contract_no="C2017092111435555254662" and cut_date=mdy(03,22,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
 if contract_no="C2018012219070532415053" and cut_date=mdy(03,24,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
 
+if contract_no="C2017051216070171982298" and cut_date=mdy(03,23,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
+if contract_no="C2017112014374389197751" and cut_date=mdy(03,24,2019) then »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=0;
+
 
 
 if contract_no="C2017092117533445057225" and cut_date=mdy(3,13,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
@@ -1404,6 +1447,8 @@ if contract_no="C2017092117533445057225" and cut_date=mdy(3,13,2019) then »¹¿î_µ
 if contract_no="C2017070420050177544700" and cut_date=mdy(3,22,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017072515281323868676" and cut_date=mdy(3,15,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017080210272523240535" and cut_date=mdy(3,20,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+
+if contract_no="C2017110613581169751106" and cut_date=mdy(3,24,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 
 
 rename outstanding=´û¿îÓà¶î outstanding_capital=´û¿îÓà¶î_Ê£Óà±¾½ğ²¿·Ö;
