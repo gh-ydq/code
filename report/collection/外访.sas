@@ -35,4 +35,4 @@ scantext=no;
 getnames=yes;
 run;
 
-%include "D:\share\github\sentence\collection\Íâ·Ã-Âß¼­.sas";
+%include "D:\share\github\code\report\collection\Íâ·Ã_Âß¼­.sas";

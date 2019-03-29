@@ -28,4 +28,4 @@ scantext=no;
 getnames=yes;
 run;
 
-%include "D:\share\github\sentence\collection\催回率-逻辑.sas";
+%include "D:\share\github\code\report\collection\催回率及实收统计_逻辑.sas";

@@ -69,6 +69,6 @@ data list1;
 set list1;
 if 序号="" then delete;
 run;
-%include "D:\share\github\sentence\collection\MTD-催收日报线下部分.sas";
+%include "D:\share\github\code\report\collection\MTD-催收日报线下部分.sas";
 
-%include "D:\share\github\sentence\collection\MTD-催收日报线下部分+营业部.sas";
+%include "D:\share\github\code\report\collection\MTD-催收日报线下部分+营业部.sas";
