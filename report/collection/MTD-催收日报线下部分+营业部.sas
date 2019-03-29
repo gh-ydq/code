@@ -1,3 +1,58 @@
+/*语句路径部分*/
+/****需先跑中间表-流入表****/
+/*option compress = yes validvarname = any;*/
+/*libname account 'D:\share\Datamart\原表\account';*/
+/*libname csdata 'D:\share\Datamart\原表\csdata';*/
+/*libname res  'D:\share\Datamart\原表\res';*/
+/*libname repayFin "D:\share\Datamart\中间表\repayAnalysis";*/
+/**/
+/*x  "D:\share\催收类\MTD\MTD_Collector_Performance-营业部.xlsx"; */
+/**/
+/*proc import datafile="D:\share\催收类\MTD\米粒报表配置表.xls"*/
+/*out=list dbms=excel replace;*/
+/*SHEET="电催人员";*/
+/*scantext=no;*/
+/*getnames=yes;*/
+/*run;*/
+/*data list;*/
+/*set list;*/
+/*if 序号="" then delete;*/
+/*run;*/
+/*proc import datafile="D:\share\催收类\MTD\米粒报表配置表.xls"*/
+/*out=list1 dbms=excel replace;*/
+/*SHEET="电催营业部";*/
+/*scantext=no;*/
+/*getnames=yes;*/
+/*run;*/
+/*data list1;*/
+/*set list1;*/
+/*if 序号="" then delete;*/
+/*run;*/
+
+
+
+
+data _null_;
+format dt yymmdd10.;
+ dt = today() - 1;
+ if month(dt)=month(dt-2) then
+ db=intnx("month",dt,0,"b");     
+ else if weekday(dt)=1 then
+db=intnx("month",dt-2,0,"b");
+else db=intnx("month",dt,0,"b");   
+/*dt=mdy(9,30,2017);*/
+/*db=mdy(9,1,2017);*/
+ nd = dt-db;
+weekf=intnx('week',dt,0);
+call symput("nd", nd);
+call symput("db",db);
+if weekday(dt)=1 then
+call symput("dt",dt-2);
+else call symput("dt",dt);
+call symput("weekf",weekf);
+run;
+
+
 /*需要先跑中间表cs_table1_tab_xx_;*/
 data repay_plan_qk;
 set account.repay_plan;

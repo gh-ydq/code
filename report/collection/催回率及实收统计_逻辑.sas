@@ -1,3 +1,35 @@
+/*路径部分*/
+
+/****需先跑中间表-日终绑定关系表****/
+
+/*option compress = yes validvarname = any;*/
+/**/
+/**/
+/*libname repayfin "D:\share\Datamart\中间表\repayAnalysis";*/
+/*libname approval "D:\share\Datamart\原表\approval";*/
+/*libname account 'D:\share\Datamart\原表\account';*/
+/*libname csdata 'D:\share\Datamart\原表\csdata';*/
+/*libname res  'D:\share\Datamart\原表\res';*/
+/*option compress = yes validvarname = any;*/
+/*libname acco odbc database=account_nf;*/
+/**/
+/*x "D:\share\催收类\催回率\催回率及实收统计.xlsx"; */
+/**/
+/*proc import datafile="D:\share\催收类\MTD\米粒报表配置表.xls"*/
+/*out=mmlist_8_3 dbms=excel replace;*/
+/*SHEET="催回率";*/
+/*scantext=no;*/
+/*getnames=yes;*/
+/*run;*/
+/**/
+/*proc import datafile="D:\share\催收类\催回率\3月客户明细M2-M3.xlsx"*/
+/*out=mmlist_3_1_a dbms=excel replace;*/
+/*SHEET="sheet1";*/
+/*scantext=no;*/
+/*getnames=yes;*/
+/*run;*/
+
+
 ************
 1-16号分配的客户都是跟进到月底最后一天截止，17-30号分配的客户是C-M1的客户了,有时候17号之后分配的C-M1的客户到下个月就变成了M1-M2了
 ************;
