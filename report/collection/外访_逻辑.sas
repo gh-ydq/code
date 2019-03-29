@@ -1,43 +1,3 @@
-/*option compress = yes validvarname = any;*/
-/*libname acco odbc database=account_nf;*/
-/*libname csdata 'E:\guan\原数据\csdata';*/
-/*libname approval 'E:\guan\原数据\approval';*/
-/*libname account 'E:\guan\原数据\account';*/
-/*libname res "E:\guan\原数据\res";*/
-/*libname repayfin "E:\guan\中间表\repayfin";*/
-/**/
-/*x 'E:\guan\催收报表\外访\外访案件分配及催回率.xlsx';*/
-/**/
-/*proc import datafile="E:\guan\催收报表\MTD\米粒报表配置表.xls"*/
-/*out=kanr_visit6 dbms=excel replace;*/
-/*SHEET="外访";*/
-/*scantext=no;*/
-/*getnames=yes;*/
-/*run;*/
-/**/
-/*%include "E:\guan\催收报表\外访\外访_逻辑.sas";*/
-
-data aa;
-format dt yymmdd10.;
- dt = today() - 1;
- if month(dt)=month(dt-2) then 
- db=intnx("month",dt,0,"b");
- else if weekday(dt)=1 then
-db=intnx("month",dt-2,0,"b");
-else db=intnx("month",dt,0,"b");
-dbpe=intnx("month",dt,0,"b")-1;
-/*dt=mdy(9,30,2017);*/
-/*db=mdy(9,1,2017);*/
- nd = dt-db;
-if weekday(dt)=1 then do;weekf=intnx('week',dt,-1)+1;end;
-	else do; weekf=intnx('week',dt,0)+1;end;
-call symput("dbpe", dbpe);
-call symput("nd", nd);
-call symput("db",db);
-call symput("dt",dt);
-call symput("weekf",weekf);
-run;
-
 data ca_staff;
 set res.ca_staff;
 id1=compress(put(id,$20.));
@@ -77,6 +37,7 @@ set ctl_vlist_1;
 by CONTRACT_NO;
 if last.CONTRACT_NO;
 run;
+/*是否会有同一个月两条记录。则取不到这个客户更早的一条记录*/
 
 ****************************************************************
 
@@ -107,22 +68,24 @@ format 预计外访结束日期 yymmdd10.;
 if status=-2 then delete;
 if id=18092520121104 then delete;
 分配=1;
-if &db.<=外访分配日期<=&dt.;
+if &db.<=外访分配日期<=&dt. or contract_no="C2017042617334370619840";       *  or 以及后面的数据，4月初删除;
+if contract_no="C2017042617334370619840" then do 外访分配日期=&db.;预计外访开始日期=&db.;预计外访结束日期=&db.;end;       * 4月初删除;
 run;
 
 /*************月初注释掉————由于缺少外访记录，需手动添加*********/
 /*data kanr_visit1_1;*/
-/*contract_no='C152109534097503000004739';*/
+/*contract_no='C2017112310472275352163';*/
 /*status='3';*/
 /*format 外访分配日期 yymmdd10.;*/
 /*format 预计外访开始日期 yymmdd10.;*/
 /*format 预计外访结束日期 yymmdd10.;*/
-/*外访分配日期=mdy(02,22,2019);*/
-/*预计外访开始日期=mdy(02,26,2019);*/
-/*预计外访结束日期=mdy(02,26,2019);*/
-/*userName="姜浩然";*/
+/*外访分配日期=mdy(01,03,2019);*/
+/*预计外访开始日期=mdy(01,03,2019);*/
+/*预计外访结束日期=mdy(01,07,2019);*/
+/*userName="许炳波";*/
 /*分配=1;*/
 /*run;*/
+
 /**************月初注释掉********************/
 
 data kanr_visit1;
@@ -142,13 +105,13 @@ left join repayfin.payment_daily(where=(营业部^="APP")) as f on a.contract_no=f.
 quit;
 data kanr_visit3;
 set kanr_visit2;
-
 if 营业部='北京市第一营业部' and username='李超' then username='李超1';
 if 预计外访开始日期<=外访创建日期 then 外访=1;else 外访=0;
 /*if status=3 or (status^=3 and 预计外访开始日期<=外访开始日期<=预计外访结束日期) then 外访=1;else 外访=0;*/
 /*if (预计外访开始日期<=外访开始日期<=预计外访结束日期) then 外访=1;else 外访=0;*/
 if 预计外访开始日期<=clear_date<=预计外访结束日期 then 催回=1;else 催回=0;
-
+if contract_no in ("C2017052315221298717596","C2017062214570771385203") then 催回=1;      *4月初删除(要求添加分配&还款);
+IF contract_no="C2016092315304619856732" then 贷款余额=5675.468;     *4月初删除;
 if 催回=1 then do;贷款余额_催回=贷款余额;外访=1;end;else do; 贷款余额_催回=0;clear_date=.;end;
 /*if od_days=31 and day(repay_date)=day(外访分配日期) then od_days=30;*/
 if od_days<=15 then od_days=od_days_yd+day(外访分配日期);
@@ -156,6 +119,10 @@ if od_days<=15 then od_days=od_days_yd+day(外访分配日期);
 if clear_date=外访分配日期 then od_days=OVERDUE_DAYS;
 if 30>=od_days>15 then 阶段="M1";
 	else if 90>=od_days>30 then 阶段="M2";
+if contract_no="C2017061315332573208097" then 阶段="M2";       *4月初删除(黄任雪);
+if contract_no in ("C152099880497603000004461","C2017120513471173010169","C152393625759002300010412") and 阶段="M1" then delete;*4月初删除;
+if contract_no in ("C2017062717214755572585","C2018042013341266055867","C2017042617334370619840","C2017062214570771385203") then 阶段="M1";   *4月初删除;
+if contract_no in ("C2018030115565478584176","C2017052315221298717596") then 阶段="M2";      *4月初删除;
 keep ID contract_no 外访开始日期 预计外访开始日期 预计外访结束日期 外访分配月份 od_days 贷款余额 od_days_yd 阶段 userName status 催回 clear_date 外访分配日期 客户姓名 营业部 外访 贷款余额_催回;
 run;
 proc sort data=kanr_visit3;by contract_no descending 外访 descending 催回 descending 外访分配日期;run;
