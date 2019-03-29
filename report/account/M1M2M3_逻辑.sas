@@ -173,7 +173,7 @@ if &month_begin.<=repay_date<=&month_end.;
 if clear_date>0;
 keep contract_no 客户姓名 REPAY_DATE CLEAR_DATE  ;
 run;
-proc sort data=aa;by  REPAY_DATE CLEAR_DATE  ;run;
+/*proc sort data=aa;by  REPAY_DATE CLEAR_DATE  ;run;*/
 
 *导出文件已移至最后;
 
