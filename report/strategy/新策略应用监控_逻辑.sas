@@ -14,13 +14,16 @@
 
 
 data _null_;
-format dt yymmdd10.;
+format dt first_month yymmdd10.;
 dt = today() - 1;
 db=intnx('month',dt,0,'b');
 nd = dt-db;
+first_month=mdy(11,1,2018);
+due_month=intck("month",first_month,dt)+11;
 call symput("nd", nd);
 call symput("dt", dt);
 call symput("db", db);
+call symput('due_month',due_month);
 run;
 data date;
 format date  yymmdd10. prime_key ;
@@ -453,7 +456,7 @@ data _null_;set test_r_7_2;file DD;put tg_A tg_B tg_C tg_D tg_E;run;
 *月度漏斗情况;
 data test_r_5_;
 set test_r_4;
-month=month(Date);
+month=put(Date,yymmn6.);
 /*if date>mdy(11,5,2018);*/
 array num _numeric_;
 do over num;
@@ -472,22 +475,36 @@ proc transpose data=test_r_6 out=test_r_7 prefix=month_;
 		a14_自动拒绝 a15_分数变动 a16_非自动拒绝变自动拒绝 a17_审批通过量 a18_审批数量;
 	ID month;
 run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c3:r21c3";
-data _null_;set test_r_7;file DD;put month_11;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c7:r21c7";
-data _null_;set test_r_7;file DD;put month_12;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c11:r21c11";
-data _null_;set test_r_7;file DD;put month_1;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c15:r21c15";
-data _null_;set test_r_7;file DD;put month_2;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c19:r21c19";
-data _null_;set test_r_7;file DD;put month_3;run;
+%macro jinjian();
+	%do i = 11 %to &due_month.;
+		data _null_;
+		format col_ja $2.;*列数为1位数或3位数时不再适用;
+		col_ja=3+(&i.-11)*4;
+		call symput('col_ja',col_ja);
+		format month help_date yymmdd10.;
+		help_date=mdy(12,1,2017);
+		month=intnx('month',help_date,&i.);
+		str_month='month_' || put(month,yymmn6.);
+		call symput('str_month',str_month);
+		run;
+		filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c&col_ja.:r21c&col_ja.";
+		data _null_;set test_r_7;file DD;put &str_month.;run;
+	%end;
+%mend;
+	
+%jinjian();
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c3:r21c3";*/
+/*data _null_;set test_r_7;file DD;put month_11;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c7:r21c7";*/
+/*data _null_;set test_r_7;file DD;put month_12;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c11:r21c11";*/
+/*data _null_;set test_r_7;file DD;put month_1;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c15:r21c15";*/
+/*data _null_;set test_r_7;file DD;put month_2;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r4c19:r21c19";*/
+/*data _null_;set test_r_7;file DD;put month_3;run;*/
 
 *月度各分档的通过率;
-/*data test_r_3_;*/
-/*set test_r_3_;*/
-/*if date>mdy(11,5,2018);*/
-/*run;*/
 data test_r_3_a;
 set test_r_3_;
 month=month(Date);
@@ -521,7 +538,7 @@ run;
 data test_r_3_e_1;
 set test_r_3_e_1;
 MODEL_SCORE_LEVEL_=1;
-keep MODEL_SCORE_LEVEL month_11 month_12 month_1 month_2 month_3 MODEL_SCORE_LEVEL_;
+/*keep MODEL_SCORE_LEVEL month_11 month_12 month_1 month_2 month_3 MODEL_SCORE_LEVEL_;*/
 run;
 data test_r_3_d_2;
 set test_r_3_d;
@@ -536,7 +553,7 @@ run;
 data test_r_3_e_2;
 set test_r_3_e_2;
 MODEL_SCORE_LEVEL_=3;
-keep MODEL_SCORE_LEVEL month_11 month_12 month_1 month_2 month_3 MODEL_SCORE_LEVEL_;
+/*keep MODEL_SCORE_LEVEL month_11 month_12 month_1 month_2 month_3 MODEL_SCORE_LEVEL_;*/
 run;
 data test_r_3_d_3;
 set test_r_3_d;
@@ -551,22 +568,42 @@ run;
 data test_r_3_e_3;
 set test_r_3_e_3;
 MODEL_SCORE_LEVEL_=2;
-keep MODEL_SCORE_LEVEL month_11 month_12 month_1 month_2 month_3 MODEL_SCORE_LEVEL_;
+/*keep MODEL_SCORE_LEVEL month_11 month_12 month_1 month_2 month_3 MODEL_SCORE_LEVEL_;*/
 run;
 data test_r_3_f;
 set test_r_3_e_1 test_r_3_e_2 test_r_3_e_3;
 run;
 proc sort data=test_r_3_f;by MODEL_SCORE_LEVEL MODEL_SCORE_LEVEL_;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c3:r37c3";
-data _null_;set test_r_3_f;file DD;put month_11;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c7:r37c7";
-data _null_;set test_r_3_f;file DD;put month_12;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c11:r37c11";
-data _null_;set test_r_3_f;file DD;put month_1;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c15:r37c15";
-data _null_;set test_r_3_f;file DD;put month_2;run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c19:r37c19";
-data _null_;set test_r_3_f;file DD;put month_3;run;
+
+%macro jinjian2();
+	%do i = 11 %to &due_month.;
+		data _null_;
+		format col_ja $2.;*列数为1位数或3位数时不再适用;
+		col_ja=3+(&i.-11)*4;
+		call symput('col_ja',col_ja);
+		format month help_date yymmdd10.;
+		help_date=mdy(12,1,2017);
+		month=intnx('month',help_date,&i.);
+		str_month='month_' || put(month,yymmn6.);
+		call symput('str_month',str_month);
+		run;
+		filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c&col_ja.:r37c&col_ja.";
+		data _null_;set test_r_7;file DD;put &str_month.;run;
+	%end;
+%mend;
+	
+%jinjian2();
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c3:r37c3";*/
+/*data _null_;set test_r_3_f;file DD;put month_11;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c7:r37c7";*/
+/*data _null_;set test_r_3_f;file DD;put month_12;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c11:r37c11";*/
+/*data _null_;set test_r_3_f;file DD;put month_1;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c15:r37c15";*/
+/*data _null_;set test_r_3_f;file DD;put month_2;run;*/
+/*filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]月度情况!r23c19:r37c19";*/
+/*data _null_;set test_r_3_f;file DD;put month_3;run;*/
+
 *批核金额件均;
 proc sql;
 create table test_m_1 as 
@@ -727,7 +764,7 @@ create table test_m_3_1 as
 select approve_产品,分组,month,sum(nums) as nums,sum(批核金额) as 批核金额 from test_m_3_ group by approve_产品,分组,month;
 quit;
 %macro phm();
-	%do i = 11 %to 15;
+	%do i = 11 %to &due_month.;
 		data _null_;
 		colb=3*(&i.-11)+4;
 		cole=3*(&i.-11)+5;
@@ -753,7 +790,7 @@ quit;
 %phm();
 
 %macro phme1();
-	%do i = 11 %to 15;
+	%do i = 11 %to &due_month.;
 		data _null_;
 		colb=3*(&i.-11)+4;
 		cole=3*(&i.-11)+5;
@@ -779,7 +816,7 @@ quit;
 %phme1();
 
 %macro phme2();
-	%do i = 11 %to 15;
+	%do i = 11 %to &due_month.;
 		data _null_;
 		colb=3*(&i.-11)+4;
 		cole=3*(&i.-11)+5;
@@ -805,7 +842,7 @@ quit;
 %phme2();
 
 %macro phme3();
-	%do i = 11 %to 15;
+	%do i = 11 %to &due_month.;
 		data _null_;
 		colb=3*(&i.-11)+4;
 		cole=3*(&i.-11)+5;
