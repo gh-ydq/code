@@ -59,10 +59,10 @@ run;
 
 data mmlist;
 set repayfin.dail_bdgx;
-
 /*reason：张玉萍表示，这个客户暂时放在朱琨主管名下协助跟进，实际为陈秀芬的客户，客户情况特殊。*/
 if contract_no="C152239781313802300006770" and username="朱琨" then username="陈秀芬";
-/*deal：手工调整，4月初删除该条数据*/
+/*客户对公延迟，3月31已对公，需要计算分子*/
+if contract_no="C2017111716235470079023" and issues=15 then settlement_date=DHMS( mdy(03,31,2019), 0, 0, 0 );
 
 if username in ("杜盼辉","洪高悬","张政嘉","廖翠玲","黄丽华","吴振杭","邱智超",'白璐','陈侃','陈天森','陈秀芬','黄晓妮');
 if &db.<=cut_date<=&db2.;
@@ -154,9 +154,13 @@ quit;
 *由于存在不同时间催回两期这种情况，计算当月实际催回金额;
 
 ************下月初删除*************;
+/*可一直不删,类原始数据*/
 data account.bill_main;
 set account.bill_main;
+/*2月底对公延迟客户，4月初删除*/
 if ID=297880 THEN clear_date=mdy(02,28,2019);
+/*3月底对公延迟客户,5月初删除*/
+if ID=489272 THEN clear_date=mdy(03,31,2019);
 run;
 ************下月初删除*************;
 
