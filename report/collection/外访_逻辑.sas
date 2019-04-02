@@ -106,8 +106,7 @@ format 预计外访结束日期 yymmdd10.;
 if status=-2 then delete;
 if id=18092520121104 then delete;
 分配=1;
-if &db.<=外访分配日期<=&dt. or contract_no="C2017042617334370619840";       *  or 以及后面的数据，4月初删除;
-if contract_no="C2017042617334370619840" then do 外访分配日期=&db.;预计外访开始日期=&db.;预计外访结束日期=&db.;end;       * 4月初删除;
+if &db.<=外访分配日期<=&dt.;
 run;
 
 /*************月初注释掉————由于缺少外访记录，需手动添加*********/
@@ -148,8 +147,6 @@ if 预计外访开始日期<=外访创建日期 then 外访=1;else 外访=0;
 /*if status=3 or (status^=3 and 预计外访开始日期<=外访开始日期<=预计外访结束日期) then 外访=1;else 外访=0;*/
 /*if (预计外访开始日期<=外访开始日期<=预计外访结束日期) then 外访=1;else 外访=0;*/
 if 预计外访开始日期<=clear_date<=预计外访结束日期 then 催回=1;else 催回=0;
-if contract_no in ("C2017052315221298717596","C2017062214570771385203") then 催回=1;      *4月初删除(要求添加分配&还款);
-IF contract_no="C2016092315304619856732" then 贷款余额=5675.468;     *4月初删除;
 if 催回=1 then do;贷款余额_催回=贷款余额;外访=1;end;else do; 贷款余额_催回=0;clear_date=.;end;
 /*if od_days=31 and day(repay_date)=day(外访分配日期) then od_days=30;*/
 if od_days<=15 then od_days=od_days_yd+day(外访分配日期);
@@ -157,10 +154,6 @@ if od_days<=15 then od_days=od_days_yd+day(外访分配日期);
 if clear_date=外访分配日期 then od_days=OVERDUE_DAYS;
 if 30>=od_days>15 then 阶段="M1";
 	else if 90>=od_days>30 then 阶段="M2";
-if contract_no="C2017061315332573208097" then 阶段="M2";       *4月初删除(黄任雪);
-if contract_no in ("C152099880497603000004461","C2017120513471173010169","C152393625759002300010412") and 阶段="M1" then delete;*4月初删除;
-if contract_no in ("C2017062717214755572585","C2018042013341266055867","C2017042617334370619840","C2017062214570771385203") then 阶段="M1";   *4月初删除;
-if contract_no in ("C2018030115565478584176","C2017052315221298717596") then 阶段="M2";      *4月初删除;
 keep ID contract_no 外访开始日期 预计外访开始日期 预计外访结束日期 外访分配月份 od_days 贷款余额 od_days_yd 阶段 userName status 催回 clear_date 外访分配日期 客户姓名 营业部 外访 贷款余额_催回;
 run;
 proc sort data=kanr_visit3;by contract_no descending 外访 descending 催回 descending 外访分配日期;run;
