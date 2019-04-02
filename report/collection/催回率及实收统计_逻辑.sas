@@ -22,9 +22,9 @@
 /*getnames=yes;*/
 /*run;*/
 /**/
-/*proc import datafile="D:\share\催收类\催回率\3月客户明细M2-M3.xlsx"*/
+/*proc import datafile="D:\share\催收类\催回率\4月客户明细M2-M3.xlsx"*/
 /*out=mmlist_3_1_a dbms=excel replace;*/
-/*SHEET="sheet1";*/
+/*SHEET="M2-M3";*/
 /*scantext=no;*/
 /*getnames=yes;*/
 /*run;*/
@@ -105,7 +105,7 @@ data mmlist_3;
 set mmlist_2;
 by contract_no;
 if username not in ('杜盼辉','洪高悬') and segment_name^="M1-M2" then delete;
-if username in ('杜盼辉','洪高悬') and segment_name^="M2-M3" then delete;
+if username in ('杜盼辉','洪高悬') and segment_name not in ("M2-M3","流出") then delete;
 run;
 proc sort data=mmlist_3;by contract_no descending cut_date;run;
 proc sort data=mmlist_3 out=mmlist_3 nodupkey;by contract_no issues segment_name;run;
@@ -121,7 +121,7 @@ quit;
 
 data mmlist_3;
 set mmlist_3_2;
-if segment_name="M2-M3" and 催收员="" then delete;
+if segment_name in ("M2-M3","流出") and 催收员="" then delete;
 /*if 阶段="M1-M2" and 催收员^="" then userName=催收员;*/
 run;
 
