@@ -1,7 +1,13 @@
 options compress =yes validvarname = any ;
 
+****************************************************************************;
+*数据源所在逻辑库及最后结果输出路径根据自身情况进行调整;
 libname credit odbc datasrc = credit;
 libname approval  odbc datasrc =approval;
+
+FILENAME mexport "e:\company_file\报表\规则命中\month.xlsx" ENCODING="utf-8";
+FILENAME dexport "e:\company_file\报表\规则命中\daily.xlsx" ENCODING="utf-8";
+****************************************************************************;
 
 data a;
 format last_date month_begin  yymmdd10.;
@@ -25,7 +31,7 @@ run;
 proc sort data = apply_time dupout = a nodupkey; by apply_code apply_time; run;
 proc sort data = approval.apply_info nodupkey out =apply_info; by apply_code; run;
 data apply_time1(keep = apply_code 进件月份 进件时间 进件数);
-merge apply_time(in = a) apply_info(in = b);
+set apply_time;
 by apply_code;
 format 进件时间 yymmdd10.;
 进件月份 = put(datepart(apply_time), yymmn6.);
@@ -161,36 +167,15 @@ data reasult_daily(drop =_NAME_);
 set apply_daily2 daily4;
 run;
 
-/*处理缺失值*/
-
-data reasult_month;
-set reasult_month;
-array num{*} _numeric_;
-do i  =1 to dim(num);
-if missing(num{i}) then num{i} =0;
-end;
-run;
-
-
-data reasult_daily;
-set reasult_daily;
-array num{*} _numeric_;
-do i  =1 to dim(num);
-if missing(num{i}) then num{i} =0;
-end;
-run;
-
 
 /*将文档保存到*/
-FILENAME export "e:\company_file\报表\规则命中\month.xlsx" ENCODING="utf-8";
 PROC EXPORT DATA= reasult_month
-            OUTFILE= export
+            OUTFILE= mexport
             DBMS=xlsx label REPLACE;
 RUN;
 
-FILENAME export "e:\company_file\报表\规则命中\daily.xlsx" ENCODING="utf-8";
 PROC EXPORT DATA= reasult_daily
-            OUTFILE= export
+            OUTFILE= dexport
             DBMS=xlsx  label REPLACE;
 RUN;
 
