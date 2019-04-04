@@ -1,10 +1,15 @@
 /*额度公式*/
 option compress = yes validvarname = any;
+***********************************************************************************************;
+*代码用到及输出的数据位置;
 libname dta "\\ts\share\Datamart\中间表\daily";
 libname approval "\\ts\share\Datamart\原表\approval";
 libname account "\\ts\share\Datamart\原表\account";
 libname urule odbc datasrc=urule;
 
+FILENAME export1 "E:\company_file\报表\新审批公式\审批客户.xlsx" ENCODING="utf-8";
+FILENAME export2 "E:\company_file\报表\新审批公式\客户建议额度分布情况.xlsx" ENCODING="utf-8";
+***********************************************************************************************;
 
 data _null_;
 format dt nt yymmdd10.;
@@ -17,17 +22,11 @@ call symput('week',week);
 run;
 
 
-
 /*客户信息*/
-data apply_cus;
-set dta.customer_info;
-run;
-
-
 data apply_gre;
-set apply_cus;
-
-if 天启分>1;
+set dta.customer_info(keep=apply_code 天启分 进件时间 check_end check_date group_Level PROPOSE_LIMIT_first PROPOSE_LIMIT_final approve_产品 
+							微粒贷额度 核实收入 进件 通过 批核金额_终审 负债率
+					 where=(天启分^='')); /*只保留后面用到的字段和数据，节省时间*/
 
 进件月份=substr(compress(put(进件时间,yymmdd10.),"-"),1,6);
 input_week =week(进件时间);
@@ -39,7 +38,8 @@ end;
 run ;  
 
 data model_score;
-set urule.rule011param(where=(created_date <&nt.));
+set urule.rule011param(keep=apply_code created_date model_score_level
+					  where=(created_date <&nt.));
 run;
 
 proc sort data = model_score ;by apply_code  descending created_date;run;
@@ -147,10 +147,10 @@ run;
 
 /*数据导出*/
 proc export  data=test(where=(进件时间>=mdy(11,06,2018) and approve_产品 in("E网通","U贷通","E微贷" ,"E微贷-无社保")))
-OUTFILE= "E:\company_file\报表\新审批公式\审批客户.xlsx" DBMS=EXCEL REPLACE;SHEET="客户"; run;
+OUTFILE= export1 DBMS=EXCEL REPLACE;SHEET="客户"; run;
 
 proc export data = table_
-outfile ="E:\company_file\报表\新审批公式\客户建议额度分布情况.xlsx"
+outfile = export2
 dbms = xlsx replace;
 run;
 
