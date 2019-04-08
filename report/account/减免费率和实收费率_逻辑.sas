@@ -14,7 +14,7 @@ format dt yymmdd10.;
 dt=today()-1;
 call symput("dt", dt);
 run;
-%let month="201903";*修改为本月月份;
+%let month="201904";*修改为本月月份;
 
 /*小雨点回迁之前的数据在bill_main_xyd中,RECEIPT为已经还款的数据，RECEIVE包括所有已还未还数据*/
 data bill_main_xyd;
