@@ -14,6 +14,9 @@
 proc sort data=repayfin.payment_daily;by CONTRACT_no cut_date;run;
 data cs;
 set repayfin.payment_daily;
+if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
+if contract_no='C2017121414464569454887' then delete;*蒋楠委外客户不用催收,剔除分母分子;
+if contract_no='C2017111716235470079023' and month='201904' then delete;*王丽青4月份做帐太迟，4月份不计算分母分子,剔除分母分子;
 if 还款_当日扣款失败合同 = 1;
 last_oddays=lag(od_days);
 last_还款_当日扣款失败合同=lag(还款_当日扣款失败合同);

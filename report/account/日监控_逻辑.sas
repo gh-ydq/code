@@ -84,6 +84,8 @@ run;
 data payment_daily;
 set repayFin.payment_daily;
 if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
+if contract_no='C2017121414464569454887' then delete;*蒋楠委外客户不用催收,剔除分母分子;
+if contract_no='C2017111716235470079023' and month='201904' then delete;*王丽青4月份做帐太迟，4月份不计算分母分子,剔除分母分子;
 run;
 *累计流入明细;
 data new_overdue;

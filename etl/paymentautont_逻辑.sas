@@ -1357,39 +1357,10 @@ if 还款_M1合同=1 and 上月末od_days_ever=0 then do;还款_从未逾期新增M1合同=1;还款
 
 if 30 < od_days <= 60 then do; 还款_M2合同 = 1; 还款_M2合同贷款余额 = outstanding; end;
 
-if contract_no="C2017072517421313005856" and cut_date=mdy(2,28,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C151451316038603000001871" and cut_date=mdy(3,3,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C152879410504703000000889" and cut_date=mdy(3,3,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C152887137784402300001124" and cut_date=mdy(3,2,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017083117381269634457" and cut_date=mdy(3,9,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017083109172614420468" and cut_date=mdy(3,11,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017080313105954478610" and cut_date=mdy(3,15,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017101110263003249765" and cut_date=mdy(3,19,2019) then 还款_当日扣款失败合同=0;
+if contract_no="C2017112014374389197751" and cut_date=mdy(3,24,2019) then 还款_当日扣款失败合同=0;
 
-
-if contract_no="C152886193731802300001045" and cut_date=mdy(03,20,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2016091409121455841732" and cut_date=mdy(03,20,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017111310243119919437" and cut_date=mdy(03,20,2019) then 还款_当日扣款失败合同=0;
-
-if contract_no="C2017110619062282147179" and cut_date=mdy(03,21,2019) then 还款_当日扣款失败合同=0;
-
-if contract_no="C152385455472102300010153" and cut_date=mdy(03,24,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017092111435555254662" and cut_date=mdy(03,22,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2018012219070532415053" and cut_date=mdy(03,24,2019) then 还款_当日扣款失败合同=0;
-
-if contract_no="C2017051216070171982298" and cut_date=mdy(03,23,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017112014374389197751" and cut_date=mdy(03,24,2019) then 还款_当日扣款失败合同=0;
-
-
-if contract_no="C2017092117533445057225" and cut_date=mdy(3,13,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2017070420050177544700" and cut_date=mdy(3,22,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017072515281323868676" and cut_date=mdy(3,15,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017080210272523240535" and cut_date=mdy(3,20,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2017110613581169751106" and cut_date=mdy(3,24,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2018020916075382496319" and cut_date=mdy(3,28,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017121414464569454887" and cut_date=mdy(4,4,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017111716235470079023" and cut_date=mdy(4,9,2019) then 还款_当日流入15加合同=0;
 
 
 rename outstanding=贷款余额 outstanding_capital=贷款余额_剩余本金部分;
@@ -1421,39 +1392,10 @@ if 还款_M1合同=1 and 上月末od_days_ever=0 then do;还款_从未逾期新增M1合同=1;还款
 
 if 30 < od_days <= 60 then do; 还款_M2合同 = 1; 还款_M2合同贷款余额 = outstanding; end;
 
-if contract_no="C2017072517421313005856" and cut_date=mdy(2,28,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C151451316038603000001871" and cut_date=mdy(3,3,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C152879410504703000000889" and cut_date=mdy(3,3,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C152887137784402300001124" and cut_date=mdy(3,2,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017083117381269634457" and cut_date=mdy(3,9,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017083109172614420468" and cut_date=mdy(3,11,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017080313105954478610" and cut_date=mdy(3,15,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017101110263003249765" and cut_date=mdy(3,19,2019) then 还款_当日扣款失败合同=0;
+if contract_no="C2017112014374389197751" and cut_date=mdy(3,24,2019) then 还款_当日扣款失败合同=0;
 
-if contract_no="C152886193731802300001045" and cut_date=mdy(03,20,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2016091409121455841732" and cut_date=mdy(03,20,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017111310243119919437" and cut_date=mdy(03,20,2019) then 还款_当日扣款失败合同=0;
-
-if contract_no="C2017110619062282147179" and cut_date=mdy(03,21,2019) then 还款_当日扣款失败合同=0;
-
-if contract_no="C152385455472102300010153" and cut_date=mdy(03,24,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017092111435555254662" and cut_date=mdy(03,22,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2018012219070532415053" and cut_date=mdy(03,24,2019) then 还款_当日扣款失败合同=0;
-
-if contract_no="C2017051216070171982298" and cut_date=mdy(03,23,2019) then 还款_当日扣款失败合同=0;
-if contract_no="C2017112014374389197751" and cut_date=mdy(03,24,2019) then 还款_当日扣款失败合同=0;
-
-
-
-if contract_no="C2017092117533445057225" and cut_date=mdy(3,13,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2017070420050177544700" and cut_date=mdy(3,22,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017072515281323868676" and cut_date=mdy(3,15,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017080210272523240535" and cut_date=mdy(3,20,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2017110613581169751106" and cut_date=mdy(3,24,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2018020916075382496319" and cut_date=mdy(3,28,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017121414464569454887" and cut_date=mdy(4,4,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017111716235470079023" and cut_date=mdy(4,9,2019) then 还款_当日流入15加合同=0;
 
 
 rename outstanding=贷款余额 outstanding_capital=贷款余额_剩余本金部分;

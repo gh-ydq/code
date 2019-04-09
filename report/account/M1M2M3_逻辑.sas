@@ -45,17 +45,22 @@ run;
 
 %put &dtt.;
 /*%let dtt=mdy(12,31,2017);*/
-
+data payment_daily;
+set repayFin.payment_daily;
+if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
+if contract_no='C2017121414464569454887' then delete;*蒋楠委外客户不用催收,剔除分母分子;
+if contract_no='C2017111716235470079023' and month='201904' then delete;*王丽青4月份做帐太迟，4月份不计算分母分子,剔除分母分子;
+run;
 
 /*看本月M1M2客户，是全部的*/
 data kank_1;
-set repayFin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if contract_no="C2017090517364935629487" and month="201809" then delete ;
 if 还款_上月底M1=1 and 营业部^="APP";
 keep CONTRACT_NO 资金渠道 客户姓名 营业部 贷款余额_1月前_M1 ;
 run;
 data kank;
-set repayFin.payment_daily;
+set payment_daily;
 
 if 还款_上月底M1=1;
 if 还款_M1M2^=1;
@@ -80,13 +85,13 @@ quit;
 proc sort data=kank_;by  descending 还款日期;run;
 
 data kankk_1;
-set repayFin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if 还款_上月底M2=1 and 营业部^="APP";
 keep CONTRACT_NO 资金渠道 客户姓名 营业部 贷款余额_1月前_M2_r ;
 run;
 /*不同资金渠道分开求还款日期*/
 data kankk__1;
-set repayFin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if 还款_上月底M2=1 and 营业部^="APP";
 if 还款_M2M3^=1 ;
 if 资金渠道 not in ("jsxj1");
@@ -100,7 +105,7 @@ run;
 /*keep CONTRACT_NO 资金渠道 贷款余额 ;*/
 /*run;*/
 data kankk__3;
-set repayFin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if 还款_上月底M2=1 and 营业部^="APP";
 if 还款_M2M3^=1 ;
 if 资金渠道 ="jsxj1";
@@ -167,7 +172,7 @@ proc sort data=kankk_;by  descending 还款日期;run;
 /*run;*/*/;
 
 data bill_month;
-set repayfin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if 营业部^="APP";
 if &month_begin.<=repay_date<=&month_end.;
 if clear_date>0;
@@ -186,14 +191,14 @@ run;
 
 *---------------------------------------------------------------穆卿m1、m2分子-----------------------------------------------------------------------*;
 data mm1;
-set repayfin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if 还款_M1合同贷款余额>0;
 if 营业部^="APP";
 keep   contract_no 客户姓名 营业部 贷款余额_剩余本金部分 贷款余额 od_days 资金渠道;
 run;
 
 data mm2;
-set repayfin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if 还款_M2合同贷款余额>0;
 if 营业部^="APP";
 keep   contract_no 客户姓名 营业部 贷款余额_剩余本金部分 贷款余额 od_days 资金渠道;
@@ -207,7 +212,7 @@ run;
 
 *---------------------------------------------------------------部分还款客户-----------------------------------------------------------------------*;
 data aa;
-set repayfin.payment_daily(where=(cut_date=&dt.));
+set payment_daily(where=(cut_date=&dt.));
 if 营业部^="APP";
 if 还款_M2合同贷款余额>0;
 run;
