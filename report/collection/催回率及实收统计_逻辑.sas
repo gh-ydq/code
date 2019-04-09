@@ -22,6 +22,13 @@
 /*getnames=yes;*/
 /*run;*/
 /**/
+/*proc import datafile="D:\share\催收类\催回率\4月提前委案客户名单.xlsx"*/
+/*out=mmlist_3_weiwai dbms=excel replace;*/
+/*SHEET="sheet1";*/
+/*scantext=no;*/
+/*getnames=yes;*/
+/*run;*/
+/**/
 /*proc import datafile="D:\share\催收类\催回率\4月客户明细M2-M3.xlsx"*/
 /*out=mmlist_3_1_a dbms=excel replace;*/
 /*SHEET="M2-M3";*/
@@ -114,8 +121,9 @@ proc sort data=mmlist_3 out=mmlist_3 nodupkey;by contract_no issues segment_name
 proc sql;
 create table mmlist_3_2 as 
 select a.*,b.催收员 from mmlist_3 as a
-left join mmlist_3_1_a as b on a.contract_no=b.合同;
+left join mmlist_3_1_a as b on a.contract_no=b.合同
 /*left join mmlist_3_1_a as c on a.contract_no=c.合同;*/
+where a.contract_no not in (select 合同编号 from mmlist_3_weiwai);
 quit;
 
 
@@ -223,12 +231,12 @@ proc sort data=mmlist_7;by descending repy_date segment_name username;run;
 proc sql;
 create table mmlist_8_1 as 
 select username,sum(贷款余额) as 贷款余额,sum(催回余额) as 催回余额,sum(催回余额外访) as 催回余额外访,sum(实际金额) as 实际金额,sum(实际金额外访) as 实际金额外访 from mmlist_7 
-where segment_name in ('M1-M2','M2-M3')
+where segment_name in ('M1-M2','M2-M3','流出')
 group by username;
 quit;
 proc sql;
 create table mmlist_8_2 as 
-select username,sum(催回余额) as 催回余额day,count(催回余额) as 催回数量day from mmlist_7 where repy_date=&dt. and segment_name in ('M1-M2','M2-M3') group by username;
+select username,sum(催回余额) as 催回余额day,count(催回余额) as 催回数量day from mmlist_7 where repy_date=&dt. and segment_name in ('M1-M2','M2-M3','流出') group by username;
 quit;
 data _null_;
 format dt yymmdd10.; 
@@ -237,7 +245,7 @@ call symput("dt", dt);
 run;
 proc sql;
 create table mmlist_8_4 as 
-select username,sum(催回余额) as 催回余额week,sum(催回余额外访) as 催回余额外访week from mmlist_7 where &weekf.<=repy_date<=&dt. and segment_name in ('M1-M2','M2-M3') group by username;
+select username,sum(催回余额) as 催回余额week,sum(催回余额外访) as 催回余额外访week from mmlist_7 where &weekf.<=repy_date<=&dt. and segment_name in ('M1-M2','M2-M3','流出') group by username;
 quit;
 
 proc sql;
