@@ -39,14 +39,14 @@
 /*run;*/
 
 
-%let month="201902";*报表月;
+%let month="201903";*报表月;
 
 data vinDDE;
 set repayfin.payment_g;
 format 放款月份1 yymmdd10.;
 放款月份1=intnx("month",loan_date,0,"b");
 if not kindex(产品小类,"米粒");
-if month^="201903";*当前月;
+if month^="201904";*当前月;
 run;
 
 *【营业部】;
