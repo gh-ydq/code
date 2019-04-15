@@ -202,7 +202,8 @@ if contract_no="C2016121213424187356545" and PSPERDNO>=11 then do;clear_date_js=
 if contract_no="C2016110318322980045633" and PSPERDNO>=13 then do;clear_date_js=.;SETLPRCP=0 ;SETLNORMINT=0;end;
 if contract_no="C2016112515202590098145" and PSPERDNO>=10 then do;clear_date_js=.;SETLPRCP=0 ;SETLNORMINT=0;end;
 run;
-proc sort data=tttrepay_plan_js;by contract_no PSPERDNO;run;
+proc sort data = tttrepay_plan_js; by contract_no psperdno descending SETLPRCP; run;
+proc sort data=tttrepay_plan_js nodupkey;by contract_no PSPERDNO;run;
 data repayfin.tttrepay_plan_js;
 set tttrepay_plan_js;
 run;
@@ -374,7 +375,9 @@ data account_info;
 set account.account_info(keep = contract_no ch_name branch_code fund_channel_code product_name id_number account_status contract_amount remain_capital  
 							period complete_period curr_period loan_date LAST_REPAY_DATE TEAM_MANAGER CUSTOMER_MANAGER BORROWER_TEL_ONE);
 apply_code = tranwrd(contract_no, "C", "PL");
-if contract_no='C2017102018470822293088' then account_status='0003';
+if contract_no='C2017102018470822293088' then account_status='0003';*已提前结清，但是无提前结清状态码;
+if contract_no='C2016111817181457759673' then account_status='0003';*已提前结清，但是无提前结清状态码;
+if contract_no='C153084252779302300003309' then account_status='0003';*已提前结清，但是无提前结清状态码;
 run;
 proc sort data = account_info nodupkey; by apply_code ; run;
 proc sort data = apply_time ; by apply_code 营业部; run;
@@ -730,6 +733,7 @@ if kindex(资金渠道,"xyd") and clear_date_hq=offset_date and clear_date>0 then do
 if kindex(资金渠道,"xyd") and  clear_date>0 and offset_date<1 then do;offset_date=clear_date;CURR_RECEIPT_AMT=CURR_RECEIVE_AMT;end;
 if bill_code="EBL2018011209071809" then delete;
 if bill_code="EBL2016081614292303" then delete;
+if BILL_CODE='EBL2016110210545002' then delete;*删除提前还款失败的记录;
 run;
 proc sort data=bill_fee_dtl;by contract_no FEE_DATE;run;
 
