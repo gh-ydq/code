@@ -434,6 +434,7 @@ if contract_no='C2017070615201064320527' then do;CURR_RECEIPT_AMT=12480.6;佣金=6
 if contract_no='C152463981193603000000638' then do;CURR_RECEIPT_AMT=36770.44;佣金=1522.59;end;
 if contract_no='C2017091316163328413127' then do;CURR_RECEIPT_AMT=21359.73;佣金=1083.1671;end;
 if contract_no='C2017090515274353580507' then do;CURR_RECEIPT_AMT=15674.99;佣金=847.51335;end;
+if contract_no='C2018010212460084876364' then do;CURR_RECEIPT_AMT=27255.88;佣金=1262.93;end;
 run;
 proc sort data=pre_list_8;by descending clear_date;run;
 /*filename DD DDE "EXCEL|[提前结清名单.xlsx]已结清明细!r2c1:r100c5";*/
