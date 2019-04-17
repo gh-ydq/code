@@ -6,26 +6,19 @@
 /*libname repayfin 'E:\guan\中间表\repayfin';*/
 /*option compress = yes validvarname = any;*/
 /**/
-/*proc import datafile="E:\guan\催收报表\提前结清名单\放款客户.xls"*/
-/*out=new_score dbms=excel replace;*/
-/*SHEET="放款客户";*/
-/*scantext=no;*/
-/*getnames=yes;*/
-/*run;*/
 /*proc import datafile="E:\guan\催收报表\提前结清名单\政策剔除原数据.xlsx"*/
 /*out=policy dbms=excel replace;*/
 /*SHEET="放款客户";*/
 /*scantext=no;*/
 /*getnames=yes;*/
 /*run;*/
-/*proc import datafile="E:\guan\催收报表\提前结清名单\历史名单汇总.xlsm"*/
+/*proc import datafile="E:\guan\催收报表\提前结清名单\提前结清名单.xlsx"*/
 /*out=pre_list dbms=excel replace;*/
-/*SHEET="明细";*/
+/*SHEET="历史名单汇总";*/
 /*scantext=no;*/
 /*getnames=yes;*/
 /*run;*/
 /*x "E:\guan\催收报表\提前结清名单\提前结清名单.xlsx";*/
-/*x "E:\guan\催收报表\提前结清名单\历史名单汇总.xlsm";*/
 
 data null;
 format dt yymmdd10.;
@@ -89,48 +82,6 @@ date=datepart(CREATED_TIME);
 run;
 
 
-data score;
-set new_score;
-keep apply_code 新模型分;
-rename 新模型分=score;
-run;
-proc sql;
-create table new_info_fk as 
-select a.*,g.营业部
-from score as a
-left join apply_info as g on a.apply_code=g.apply_code;
-quit;
-data new_info_fk_1;
-set new_info_fk;
-if 营业部 in ("乌鲁木齐市第一营业部","伊犁市第一营业部","库尔勒市第一营业部") then region="1档";
-	else if 营业部 in ("赤峰市第一营业部","上海福州路营业部","福州五四路营业部","怀化市第一营业部","郑州市第一营业部","厦门市第一营业部","深圳市第一营业部","江门市业务中心","盐城市第一营业部"
-		,"武汉市第一营业部","红河市第一营业部","南通市业务中心","南京市业务中心","北京市第一营业部") then region="3档";
-	else region="2档";
-if region="1档" then do;
-	if score>=565 then 分档="A";
-		else if score>=480 then 分档="B";
-		else if score<1 then 分档="Z";
-		else 分档="F";
-	end;
-else if region="3档" then do;
-	if score>=620 then 分档="B";
-		else if score>=565 then 分档="D";
-		else if score>=545 then 分档="E";
-		else if score<1 then 分档="Z";
-		else 分档="F";
-	end; 
-else do;
-	if score>=630 then 分档="A";
-		else if score>=605 then 分档="B";
-		else if score>=570 then 分档="C";
-		else if score>=555 then 分档="D";
-		else if score>=515 then 分档="E";
-		else if score<1 then 分档="Z";
-		else 分档="F";
-	end; 
-run;
-
-
 data payment_p;
 set repayfin.payment_daily;
 run;
@@ -143,10 +94,9 @@ run;
 proc sort data=payment_p2 nodupkey;by contract_no;run;
 proc sql;
 create table payment_p3 as 
-select a.*,d.score,c.近6个月个人查询剔除,c.内部审批政策剔除,c.营业部特殊限制剔除,c.天启分限制剔除,d.分档 from payment_p2 as a
-/*left join new_score_fk as b on a.apply_code=b.apply_code*/
+select a.*,c.近6个月个人查询剔除,c.内部审批政策剔除,c.营业部特殊限制剔除,c.天启分限制剔除,d.MODEL_SCORE as score,d.MODEL_SCORE_LEVEL as 分档 from payment_p2 as a
 left join policy as c on a.apply_code=c.apply_code
-left join new_info_fk_1 as d  on a.apply_code=d.apply_code;
+left join repayfin.strategy as d  on a.apply_code=d.apply_code;
 quit;
 data payment_p4;
 set payment_p3;
@@ -329,18 +279,25 @@ if 佣金3>=400;
 run;
 proc sql;
 create table list_7 as 
-select 客户姓名,营业部,系统结清金额,佣金3,折中结清金额,佣金2,最低结清金额,佣金1
+select contract_no,客户姓名,营业部,系统结清金额,佣金3,折中结清金额,佣金2,最低结清金额,佣金1
 from list_6;
 quit;
-filename DD DDE "EXCEL|[提前结清名单.xlsx]提前结清名单!r2c1:r100c8";
-data _null_;set list_7;file DD;put 客户姓名 营业部 系统结清金额 佣金3 折中结清金额  佣金2 最低结清金额 佣金1;run;
+filename DD DDE "EXCEL|[提前结清名单.xlsx]提前结清名单!r2c1:r100c9";
+data _null_;set list_7;file DD;put contract_no 客户姓名 营业部 系统结清金额 佣金3 折中结清金额  佣金2 最低结清金额 佣金1;run;
 data list_8;
 set list_6;
-format dates yymmdd10.;
-dates=today();
+format 日期 yymmdd10.;
+日期=today();
+keep 日期 contract_no 客户姓名 营业部 系统结清金额 佣金3 折中结清金额 佣金2 最低结清金额 佣金1;
+rename contract_no=合同号;
 run;
-filename DD DDE "EXCEL|[历史名单汇总.xlsm]trans!r2c1:r100c4";
-data _null_;set list_8;file DD;put dates contract_no 客户姓名 营业部;run;
+data list_9;
+set pre_list list_8;
+run;
+proc sort data=list_9;by contract_no descending 日期;run;
+proc sort data=list_9 nodupkey;by contract_no;run;
+filename DD DDE "EXCEL|[提前结清名单.xlsx]历史名单汇总!r2c1:r10000c10";
+data _null_;set list_9;file DD;put 日期 合同号 客户姓名 营业部 系统结清金额 佣金3 折中结清金额  佣金2 最低结清金额 佣金1;run;
 
 data pre_list_;
 set pre_list;
@@ -358,7 +315,7 @@ run;
 proc sort data=payment_p2 nodupkey;by contract_no;run;
 proc sql;
 create table pre_list_1 as 
-select a.姓名,a.apply_code,a.营业部,a.日期,a.合同号,b.od_days,b.es,b.od_days_ever,c.ACCOUNT_STATUS from pre_list_ as a
+select a.客户姓名,a.apply_code,a.营业部,a.日期,a.合同号,b.od_days,b.es,b.od_days_ever,c.ACCOUNT_STATUS from pre_list_ as a
 left join payment_p2 as b on a.apply_code=b.apply_code
 left join account.account_info as c on c.contract_no=b.contract_no;
 quit; 
@@ -383,7 +340,7 @@ left join bill_main_es as b on a.contract_no=b.contract_no;
 quit;
 proc sql;
 create table pre_list_4 as 
-select a.*,b.CURR_PERIOD as CURR_PERIOD_es,b.CURR_RECEIPT_AMT as CURR_RECEIPT_AMT_es,b.营业部,b.姓名 from account.repay_plan as a
+select a.*,b.CURR_PERIOD as CURR_PERIOD_es,b.CURR_RECEIPT_AMT as CURR_RECEIPT_AMT_es,b.营业部,b.客户姓名 from account.repay_plan as a
 left join pre_list_3 as b on a.contract_no=b.contract_no;
 quit;
 data pre_list_4_;
@@ -412,7 +369,7 @@ if CURR_PERIOD_es > 3 then 提前还款违约金 = min(本金余额*0.03, 未出账单利息和); 
 run;
 proc sql;
 create table pre_list_8 as 
-select a.*,b.营业部,b.姓名,b.CURR_RECEIPT_AMT,b.clear_date from pre_list_7 as a
+select a.*,b.营业部,b.客户姓名,b.CURR_RECEIPT_AMT,b.clear_date from pre_list_7 as a
 left join pre_list_3 as b on a.contract_no=b.contract_no;
 quit;
 data pre_list_8;
@@ -438,4 +395,4 @@ if contract_no='C2018010212460084876364' then do;CURR_RECEIPT_AMT=27255.88;佣金=
 run;
 proc sort data=pre_list_8;by descending clear_date;run;
 /*filename DD DDE "EXCEL|[提前结清名单.xlsx]已结清明细!r2c1:r100c5";*/
-/*data _null_;set pre_list_8;file DD;put 姓名 营业部 CURR_RECEIPT_AMT 佣金 clear_date;run;*/
+/*data _null_;set pre_list_8;file DD;put contract_no 客户姓名 营业部 CURR_RECEIPT_AMT 佣金 clear_date;run;*/
