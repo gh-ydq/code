@@ -294,8 +294,9 @@ run;
 data list_9;
 set pre_list list_8;
 run;
-proc sort data=list_9;by contract_no descending 日期;run;
-proc sort data=list_9 nodupkey;by contract_no;run;
+proc sort data=list_9;by 合同号 descending 日期;run;
+proc sort data=list_9 nodupkey;by 合同号;run;
+proc sort data=list_9;by descending 日期;run;
 filename DD DDE "EXCEL|[提前结清名单.xlsx]历史名单汇总!r2c1:r10000c10";
 data _null_;set list_9;file DD;put 日期 合同号 客户姓名 营业部 系统结清金额 佣金3 折中结清金额  佣金2 最低结清金额 佣金1;run;
 
