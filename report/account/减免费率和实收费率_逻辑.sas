@@ -1,105 +1,26 @@
 /*option compress = yes validvarname = any;*/
-/*libname account odbc datasrc=account_nf;*/
-/*libname csdata odbc datasrc=csdata_nf;*/
-/*libname res  'E:\guan\原数据\res';*/
+/*libname csdata 'E:\guan\原数据\csdata';*/
 /*libname approval 'E:\guan\原数据\approval';*/
-/*libname mtd 'E:\guan\原数据\account';*/
+/*libname account 'E:\guan\原数据\account';*/
+/*libname cred "E:\guan\原数据\cred";*/
+/*libname mics "E:\guan\中间表\repayfin";*/
+/*libname res "E:\guan\原数据\res";*/
+/*libname yc 'E:\guan\中间表\yc';*/
+/*libname repayfin "E:\guan\中间表\repayfin";*/
+/*libname acco odbc datasrc=account_nf;*/
+/*libname coll odbc datasrc=csdata_nf;*/
 /**/
 /*x  "E:\guan\催收报表\逾期豁免\逾期1-15天应收罚息及豁免情况.xlsx"; */
 /*x  "E:\guan\催收报表\逾期豁免\逾期16天以上应收罚息及豁免情况.xlsx"; */
 /*x  "E:\guan\催收报表\逾期豁免\逾期应收罚息及豁免情况.xlsx"; */
+
+%let month="201904";*修改为本月月份;
 
 data null;
 format dt yymmdd10.;
 dt=today()-1;
 call symput("dt", dt);
 run;
-%let month="201904";*修改为本月月份;
-
-/*小雨点回迁之前的数据在bill_main_xyd中,RECEIPT为已经还款的数据，RECEIVE包括所有已还未还数据*/
-data bill_main_xyd;
-set account.bill_main_xyd;
-run;
-data bill_main_xyd_a;
-set bill_main_xyd;
-RECEIPT=RECEIPT_OVERDUE_PENALTY+RECEIPT_OVERDUE_SERVICE_FEE;
-RECEIVE=RECEIVE_OVERDUE_PENALTY+RECEIVE_OVERDUE_SERVICE_FEE;
-keep contract_no CURRENT_PERIOD RECEIPT RECEIVE CLEAR_DATE OVERDUE_DAYS;
-run;
-/*proc sql;*/
-/*create table bill_main_xyd_b as */
-/*select a.*,b.罚息减免 from bill_main_xyd_a as a*/
-/*left join fee_breaks_jm_1 as b on a.contract_no=b.contract_no and a.CURRENT_PERIOD=b.PERIOD;*/
-/*quit;*/
-/*proc sort data=bill_main_xyd_b;by descending clear_date;run;*/
-data bill_main_xyd_c;
-set bill_main_xyd_a;
-offset_month=put(CLEAR_DATE,yymmn6.);
-if RECEIPT>0;
-rename RECEIPT=罚息 CURRENT_PERIOD=CURR_PERIOD CLEAR_DATE=offset_date;
-keep contract_no CURRENT_PERIOD RECEIPT offset_month OVERDUE_DAYS CLEAR_DATE;
-attrib _all_ label="";
-run;
-
-/*正常的数据在bill_fee_dtl中,正常和小雨点回迁的有个位数重复，此处直接保留罚息最大值*/
-data bill_fee_dtl;
-set mtd.bill_fee_dtl;
-run;
-data bill_fee_jm;
-set bill_fee_dtl;
-if fee_name in ("逾期违约金","逾期服务费");
-if offset_date>0;
-if offset_date<=&dt.;
-offset_month=put(offset_date,yymmn6.);
-if kindex(contract_no,"C");
-run;
-proc sql;
-create table bill_fee_jm_1 as 
-select a.contract_no,a.CURR_PERIOD,sum(a.CURR_RECEIPT_AMT) as 罚息,a.offset_month,a.offset_date,b.overdue_days from bill_fee_jm as a
-left join mtd.bill_main as b on a.contract_no=b.contract_no and a.curr_period=b.curr_period 
-group by a.contract_no,a.CURR_PERIOD;
-quit;
-proc sort data=bill_fee_jm_1;by contract_no CURR_PERIOD offset_month;run;
-proc sort data=bill_fee_jm_1 out=bill_fee_jm_2 nodupkey;by contract_no CURR_PERIOD;run;
-data bill_fee_jm_2;
-set bill_fee_jm_2;
-if offset_month>0;
-run;
-data bill_fee_jm_3;
-set bill_fee_jm_2 bill_main_xyd_c;
-run;
-proc sort data=bill_fee_jm_3 nodupkey;by contract_no CURR_PERIOD descending 罚息;run;
-proc sort data=bill_fee_jm_3 out=bill_fee_jm_4 nodupkey;by contract_no CURR_PERIOD;run;
-/*data fee_breaks_apply_main;*/
-/*set account.fee_breaks_apply_main;*/
-/*run;*/
-/*data fee_breaks_jm;*/
-/*set fee_breaks_apply_main;*/
-/*if kindex(contract_no,"C");*/
-/*format fee_breaks_date yymmdd10.;*/
-/*fee_breaks_date=datepart(CREATED_TIME);*/
-/*fee_month=put(fee_breaks_date,yymmn6.);*/
-/*fee=BREAKS_SERVICE_FEE_AMT+BREAKS_OVERDUE_PENALTY_AMT;*/
-/*run;*/
-
-/*fee_breaks_apply_dtl有期款数据，比较好拼接，算明细
-fee_breaks_apply_main无期数,ctl_apply_derate只有催收申请减免数据，无财务减免数据
-罚息减免有部分数据偏大，有些是已经减免了但是期款却并没有还，有些是罚息表中部分数据异常（bill_fee_dtl没生成那么多罚息，但是此表却计算了）*/
-data fee_breaks_apply_dtl;
-set account.fee_breaks_apply_dtl;
-run;
-data fee_breaks_apply_dtl_;
-set fee_breaks_apply_dtl;
-if kindex(contract_no,"C");
-if FEE_CODE^='7009';
-run;
-/*proc sort data=fee_breaks_apply_dtl out=fee_breaks_apply_dtl_ nodupkey;by BREAKS_APPLY_CODE;run;*/
-/*proc sql;*/
-/*create table fee_breaks_jm_1 as */
-/*select a.contract_no,b.PERIOD,sum(a.fee) as 罚息减免 from fee_breaks_jm as a*/
-/*left join fee_breaks_apply_dtl_ as b on a.BREAKS_APPLY_CODE=b.BREAKS_APPLY_CODE*/
-/*group by a.contract_no,b.PERIOD;*/
-/*quit;*/
 data apply_info;
 set approval.apply_info(keep = apply_code name id_card_no branch_code branch_name DESIRED_PRODUCT);
 	if branch_code = "6" then branch_name = "上海福州路营业部";
@@ -153,6 +74,34 @@ rename branch_name = 营业部;
 contract_no=tranwrd(apply_code,"PL","C");
 run;
 
+data bill_hm;
+set account.bill_main;
+if mdy(12,1,2018)<=clear_date<=&dt.;
+if not kindex(BILL_CODE,'EBL');
+if kindex(contract_no,"C");
+month=put(clear_date, yymmn6.);
+/*if OVERDUE_DAYS>0;*/
+keep contract_no repay_date clear_date CURR_PERIOD OVERDUE_DAYS CURR_RECEIPT_AMT month;
+run;
+data repay_plan;
+set account.repay_plan;
+qigong=CURR_RECEIVE_CAPITAL_AMT+CURR_RECEIVE_INTEREST_AMT;
+run;
+proc sort data=repay_plan;by qigong;run;
+/*data aa1;*/
+/*set repay_plan;*/
+/*if qigong<1000;*/
+/*run;*/
+data fee_breaks_apply_dtl;
+set acco.fee_breaks_apply_dtl;
+if kindex(contract_no,"C");
+if FEE_CODE^='7009';
+run;
+proc sql;
+create table fee_b2 as 
+select contract_no,PERIOD,sum(BREAKS_AMOUNT) as BREAKS_AMOUNT from fee_breaks_apply_dtl group by contract_no,PERIOD;
+quit;
+
 *********************************************************************申请人姓名 start****************************************************************;
 data ca_staff;
 set res.ca_staff;
@@ -169,7 +118,7 @@ set fee_breaks_apply_dtl_1_;
 date=put(datepart(CREATED_TIME),yymmdd10.);
 run;
 data ctl_apply_derate;
-set csdata.ctl_apply_derate;
+set coll.ctl_apply_derate;
 run;
 data ctl_apply_derate_1;
 set ctl_apply_derate;
@@ -193,115 +142,81 @@ run;
 *********************************************************************申请人姓名 end****************************************************************;
 
 proc sql;
-create table fee_breaks_jm_1 as 
-select contract_no,PERIOD,sum(BREAKS_AMOUNT) as 罚息减免 from fee_breaks_apply_dtl_ group by contract_no,PERIOD;
+create table bill_hm2 as 
+select a.*,b.qigong,c.BREAKS_AMOUNT as amount,d.CREATE_NAME,d.REAMRK,e.营业部,e.name
+from bill_hm as a
+left join repay_plan as b on a.contract_no=b.contract_no and a.CURR_PERIOD=b.CURR_PERIOD
+left join fee_b2 as c on a.contract_no=c.contract_no and a.CURR_PERIOD=c.PERIOD
+left join fee_breaks_apply_dtl_3 as d on a.contract_no=d.contract_no and a.CURR_PERIOD=d.PERIOD
+left join apply_info as e on a.contract_no=e.contract_no;
 quit;
-proc sort data=fee_breaks_jm_1 nodupkey;by contract_no PERIOD;run;
-proc sql;
-create table fee_jm as 
-select a.*,b.罚息减免,c.营业部,c.name,d.CREATE_NAME,d.REAMRK from bill_fee_jm_4 as a
-left join fee_breaks_jm_1 as b on a.contract_no=b.contract_no and a.CURR_PERIOD=b.PERIOD
-left join apply_info as c on a.contract_no=c.contract_no
-left join fee_breaks_apply_dtl_3 as d on a.contract_no=d.contract_no and a.curr_period=d.period;
-quit;
-data fee_jm_1;
-set fee_jm;
+data bill_hm3;
+set bill_hm2;
+应收罚息=CURR_RECEIPT_AMT-qigong;
+if 应收罚息>1;
+实收罚息=应收罚息-amount;
+if 实收罚息<0.01 then 实收罚息=0;
+豁免率=amount/罚息;
+if month=&month.;
+if OVERDUE_DAYS<=15 then 阶段='[1,15]';else 阶段='[16,+)';
+REAMRK=tranwrd(REAMRK,'0a'x,'');
+REAMRK=compress(REAMRK);
 array num _numeric_;
 Do Over num;
 If num="." Then num=0;
 End;
-实收罚息=罚息-罚息减免;
-if overdue_days>15 then overdue='(15,+)';else overdue='[1,15]';
-if 实收罚息<1 then do; 实收罚息=0;罚息减免=罚息;end;
-if offset_month>0;
-if offset_month=&month.;
-豁免率=罚息减免/罚息;
 run;
-proc sort data=fee_jm_1 nodupkey;by contract_no CURR_PERIOD;run;
-proc sort data=fee_jm_1;by descending offset_date;run;
+data aa;
+set bill_hm3;
+if contract_no='C2017102313235936064960';
+run;
+filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]明细!r2c1:r30000c12';
+data _null_;set bill_hm3;file DD;put contract_no name CURR_PERIOD 营业部 应收罚息 amount 实收罚息 豁免率 阶段 clear_date CREATE_NAME REAMRK;run;
+data bill_hm3_1;
+set bill_hm3;
+if 阶段='[1,15]';
+run;
+filename DD DDE 'EXCEL|[逾期1-15天应收罚息及豁免情况.xlsx]明细!r2c1:r30000c12';
+data _null_;set bill_hm3_1;file DD;put contract_no name CURR_PERIOD 营业部 应收罚息 amount 实收罚息 豁免率 阶段 clear_date CREATE_NAME REAMRK;run;
+data bill_hm3_2;
+set bill_hm3;
+if 阶段='[16,+)';
+run;
+filename DD DDE 'EXCEL|[逾期16天以上应收罚息及豁免情况.xlsx]明细!r2c1:r30000c12';
+data _null_;set bill_hm3_2;file DD;put contract_no name CURR_PERIOD 营业部 应收罚息 amount 实收罚息 豁免率 阶段 clear_date CREATE_NAME REAMRK;run;
 
 proc sql;
-create table fee_jm_1_1 as
-select contract_no,sum(罚息减免) as 单合同减免金额 from fee_jm_1 group by contract_no;
+create table bill_hm4 as 
+select 营业部,阶段,sum(应收罚息) as 应收罚息,sum(实收罚息) as 实收罚息,sum(amount) as 减免罚息 from bill_hm3 group by 营业部,阶段;
 quit;
-proc sql;
-create table fee_jm_1_2 as 
-select a.*,b.单合同减免金额 from fee_jm_1 as a
-left join fee_jm_1_1 as b on a.contract_no=b.contract_no;
-quit;
-proc sort data=fee_jm_1_2 nodupkey;by contract_no CURR_PERIOD;run;
-proc sort data=fee_jm_1_2;by descending 单合同减免金额;run;
-filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]明细!r2c1:r30000c12';
-data _null_;set fee_jm_1_2;file DD;put contract_no name CURR_PERIOD 营业部 罚息 罚息减免 实收罚息 豁免率 overdue_days offset_date CREATE_NAME REAMRK;run;
-/*proc sql;*/
-/*create table fee_jm_2 as*/
-/*select offset_month,sum(罚息) as 罚息,sum(罚息减免) as 罚息减免,sum(实收罚息) as 实收罚息 from fee_jm_1 group by offset_month;*/
-/*quit;*/
-******************************************************* 1-15天明细及营业部汇总 *************************************************************************************;
-data fee_jm_15;
-set fee_jm_1;
-if overdue='[1,15]';
+data bill_hm5_1;
+set bill_hm4;
+if 阶段='[1,15]';
 run;
-proc sql;
-create table fee_jm_15_1 as
-select contract_no,sum(罚息减免) as 单合同减免金额 from fee_jm_15 group by contract_no;
-quit;
-proc sql;
-create table fee_jm_15_2 as 
-select a.*,b.单合同减免金额 from fee_jm_15 as a
-left join fee_jm_15_1 as b on a.contract_no=b.contract_no;
-quit;
-proc sort data=fee_jm_15_2 nodupkey;by contract_no CURR_PERIOD;run;
-proc sort data=fee_jm_15_2;by descending 单合同减免金额;run;
-filename DD DDE 'EXCEL|[逾期1-15天应收罚息及豁免情况.xlsx]明细!r2c1:r30000c12';
-data _null_;set fee_jm_15_2;file DD;put contract_no name CURR_PERIOD 营业部 罚息 罚息减免 实收罚息 豁免率 overdue_days offset_date CREATE_NAME REAMRK;run;
-proc sql;
-create table fee_jm_15_3 as
-select 营业部,sum(罚息) as 罚息,sum(罚息减免) as 罚息减免,sum(实收罚息) as 实收罚息 from fee_jm_15 group by 营业部;
-quit;
-proc sort data=fee_jm_15_3;by descending 罚息减免;run;
+proc sort data=bill_hm5_1;by descending 应收罚息;run;
 filename DD DDE 'EXCEL|[逾期1-15天应收罚息及豁免情况.xlsx]汇总!r4c1:r40c4';
-data _null_;set fee_jm_15_3;file DD;put 营业部 罚息 罚息减免 实收罚息;run;
-******************************************************* 16天以上明细及营业部汇总 *************************************************************************************;
-data fee_jm_16;
-set fee_jm_1;
-if overdue='(15,+)';
+data _null_;set bill_hm5_1;file DD;put 营业部 应收罚息 减免罚息 实收罚息;run;
+data bill_hm5_2;
+set bill_hm4;
+if 阶段='[16,+)';
 run;
-proc sql;
-create table fee_jm_16_1 as
-select contract_no,sum(罚息减免) as 单合同减免金额 from fee_jm_16 group by contract_no;
-quit;
-proc sql;
-create table fee_jm_16_2 as 
-select a.*,b.单合同减免金额 from fee_jm_16 as a
-left join fee_jm_16_1 as b on a.contract_no=b.contract_no;
-quit;
-proc sort data=fee_jm_16_2 nodupkey;by contract_no CURR_PERIOD;run;
-proc sort data=fee_jm_16_2;by descending 单合同减免金额;run;
-filename DD DDE 'EXCEL|[逾期16天以上应收罚息及豁免情况.xlsx]明细!r2c1:r30000c12';
-data _null_;set fee_jm_16_2;file DD;put contract_no name CURR_PERIOD 营业部 罚息 罚息减免 实收罚息 豁免率 overdue_days offset_date CREATE_NAME REAMRK;run;
-proc sql;
-create table fee_jm_16_3 as
-select 营业部,sum(罚息) as 罚息,sum(罚息减免) as 罚息减免,sum(实收罚息) as 实收罚息 from fee_jm_16 group by 营业部;
-quit;
-proc sort data=fee_jm_16_3;by descending 罚息减免;run;
+proc sort data=bill_hm5_2;by descending 应收罚息;run;
 filename DD DDE 'EXCEL|[逾期16天以上应收罚息及豁免情况.xlsx]汇总!r4c1:r40c4';
-data _null_;set fee_jm_16_3;file DD;put 营业部 罚息 罚息减免 实收罚息;run;
-******************************************************* 营业部汇总 **************************************************************************************************;
+data _null_;set bill_hm5_2;file DD;put 营业部 应收罚息 减免罚息 实收罚息;run;
 proc sql;
-create table fee_jm_1_3 as
-select 营业部,sum(罚息) as 罚息,sum(罚息减免) as 罚息减免,sum(实收罚息) as 实收罚息 from fee_jm_1 group by 营业部;
+create table bill_hm5_0 as 
+select 营业部,sum(应收罚息) as 应收罚息,sum(实收罚息) as 实收罚息,sum(amount) as 减免罚息 from bill_hm3 group by 营业部;
 quit;
 proc sql;
-create table fee_jm_1_4 as 
-select a.*,b.罚息 as 罚息2,b.罚息减免 as 罚息减免2,b.实收罚息 as 实收罚息2,c.罚息 as 罚息3,c.罚息减免 as 罚息减免3,c.实收罚息 as 实收罚息3 from fee_jm_1_3 as a
-left join fee_jm_15_3 as b on a.营业部=b.营业部
-left join fee_jm_16_3 as c on a.营业部=c.营业部;
+create table bill_hm5 as 
+select a.*,b.应收罚息 as 应收罚息_A1,b.实收罚息 as 实收罚息_A1,b.减免罚息 as 减免罚息_A1,c.应收罚息 as 应收罚息_A2,c.实收罚息 as 实收罚息_A2,c.减免罚息 as 减免罚息_A2 from bill_hm5_0 as a
+left join bill_hm5_1 as b on a.营业部=b.营业部
+left join bill_hm5_2 as c on a.营业部=c.营业部;
 quit;
-proc sort data=fee_jm_1_4;by descending 罚息减免;run;
+proc sort data=bill_hm5;by descending 应收罚息;run;
 filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c1:r40c4';
-data _null_;set fee_jm_1_4;file DD;put 营业部 罚息 罚息减免 实收罚息;run;
+data _null_;set bill_hm5;file DD;put 营业部 应收罚息 减免罚息 实收罚息;run;
 filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c6:r40c8';
-data _null_;set fee_jm_1_4;file DD;put 罚息2 罚息减免2 实收罚息2;run;
+data _null_;set bill_hm5;file DD;put 应收罚息_A1 减免罚息_A1 实收罚息_A1;run;
 filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c10:r40c12';
-data _null_;set fee_jm_1_4;file DD;put 罚息3 罚息减免3 实收罚息3;run;
+data _null_;set bill_hm5;file DD;put 应收罚息_A2 减免罚息_A2 实收罚息_A2;run;
