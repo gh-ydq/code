@@ -236,8 +236,8 @@ create table payment1 as
 select a.*,a.status as status_p ,b.nextmonth_repay_date ,b.nowmonth_repay_date,b.lastmonth_repay_date  from sdata as a
 left join repayd1 as b on a.contract_no=b.contract_no;
 quit;
-data payment2;
-set payment1(keep=contract_no es 放款日期 营业部 客户姓名 month od_periods od_days  status_p 贷款余额 nextmonth_repay_date  nowmonth_repay_date lastmonth_repay_date  cut_date 还款_当日扣款失败合同 还款_当日应扣款合同 );
+data payment2_1;
+set payment1(keep=contract_no es 放款日期 营业部 客户姓名 month od_periods od_days  status_p 贷款余额 nextmonth_repay_date  nowmonth_repay_date lastmonth_repay_date  cut_date 还款_当日扣款失败合同 还款_当日应扣款合同 repay_date);
 due_pd=day(lastmonth_repay_date);
 due_nd=day(nowmonth_repay_date);
 format loan_date yymmdd10.;
@@ -261,6 +261,18 @@ else if od_days > 180 then status = "08_M6+";
 else status="";
 if status="02_M1_3" and od_days>=30 then status="03_M2";
 run;
+data payment2;
+set payment2_1;
+*M2及以上的状态，直接用刚进入该状态的逾期天数来判断其首次进入该状态，用对应的cut_date作为进入该状态的日期;
+if status = "03_M2" and od_days=31 then begin_label=1;
+if status = "04_M3" and od_days=61 then begin_label=1;
+if status = "05_M4" and od_days=91 then begin_label=1;
+if status = "06_M5" and od_days=121 then begin_label=1;
+if status = "07_M6" and od_days=151 then begin_label=1;
+if due_pd=. then due_pd=day(repay_date);*部分逾期期数超过其剩余应还期数的合同号due_pd会变成空;
+if due_nd=. then due_nd=day(repay_date);
+if status in ("03_M2","04_M3","05_M4","06_M5","07_M6", "08_M6+") then do;due_pd=day(cut_date);due_nd=day(cut_date);end;
+run;
 
 *当上月底是31号周期，将30改成31;
 data peizhibiao;
@@ -273,7 +285,6 @@ if id=0 then do; day0=0;day0_n=0;day_n=0;end;
 if id=4 then do; day_n=0;end;
 if id>4 then do; day0=0;day0_n=0;day_n=0;end;
 run;
-
 
 %macro cycle;
 data _null_;
@@ -302,11 +313,24 @@ call symput("DDE2",COMPRESS(DDE2));*定义一个宏,上月账单开始的周期;
 run;
 
 *不含回滚;
+%if &i.>4 %then %do;
+*M2及以后的数据用上面定义的begin_label作为其首次进入的标志;
+proc sql;
+create table data_begining as 
+select * from payment2 
+where begin_label=1 and status in (select status from peizhibiao where id=&i.)  and es^=1 and &last_month_begin.+&day0.<=cut_date<=&last_month_end.+&day0.;
+quit;
+proc sort data=data_begining;by contract_no cut_date;run;
+proc sort data=data_begining nodupkey;by contract_no;run;
+%end;
+%else %do;
+*M2以前的数据暂时没发现问题，先保留该逻辑。M2后的数据因为每月天数不一样，粗略的用账单日来套用会出现到该账单日时逾期状态还是同上个月状态;
 proc sql;
 create table data_begining as 
 select * from payment2 
 where cut_date=lastmonth_repay_date+&day0. and status in (select status from peizhibiao where id=&i.)  and es^=1 and &last_month_begin.+&day0.<=cut_date<=&last_month_end.+&day0.;
 quit;
+%end;
 
 proc sql;
 create table begining_&i. as
@@ -318,6 +342,30 @@ create table begining_m_&i. as
 select due_pd,sum(贷款余额) as b金额_&i. from data_begining group by due_pd;
 quit;
 
+%if &i.>4 %then %do;
+*M2及以后的状态用了cut_date的日期，故此处要拼begining的日期，否则日期会乱。ending的状态则直接看30天后的状态。;
+proc sql;
+create table data_ending as
+select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,贷款余额,
+status,od_days from payment2 where contract_no in (select contract_no from data_begining);
+quit;
+proc sql;
+create table data_ending_ as 
+select a.*,b.cut_date as nrepay_date,b.due_pd from data_ending as a
+left join data_begining as b on a.contract_no=b.contract_no;
+quit;
+data data_ending_a_;
+set data_ending_;
+if cut_date<=intnx('day',nrepay_date,30);
+run;
+proc sort data=data_ending_a_;by contract_no descending cut_date;run;
+proc sort data=data_ending_a_ nodupkey;by contract_no;run;
+proc sql;
+create table data_ending_a as 
+select * from data_ending_a_ where status in (select status from peizhibiao where id>=&i.);
+quit;
+%end;
+%else %do;
 proc sql;
 create table data_ending as
 select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,贷款余额,
@@ -326,14 +374,13 @@ status,od_days,due_pd from payment2 where contract_no in (select contract_no fro
 quit;
 proc sort data=data_ending(where=(cut_date<=nrepay_date)) out=data_ending_;by contract_no descending cut_date;run;
 proc sort data=data_ending_ nodupkey ;by contract_no;run;
-
 proc sql;
 create table data_ending_a as 
 select * from data_ending_ 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>=&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.))
-or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3))
-;
+or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3));
 quit;
+%end;
 
 proc sql;
 create table ending_&i. as
@@ -415,11 +462,22 @@ run;
 
 
 *不含回滚;
+%if &i.>4 %then %do;
+proc sql;
+create table data_begining_n as 
+select * from payment2 
+where begin_label=1 and status in (select status from peizhibiao where id=&i.)  and es^=1 and &month_begin.+&day0_n.<=cut_date<=&month_end.+&day0_n.;
+quit;
+proc sort data=data_begining_n;by contract_no cut_date;run;
+proc sort data=data_begining_n nodupkey;by contract_no;run;
+%end;
+%else %do;
 proc sql;
 create table data_begining_n as 
 select * from payment2 
 where cut_date=nowmonth_repay_date+&day0_n. and status in (select status from peizhibiao where id=&i.)  and es^=1 and &month_begin.+&day0_n.<=cut_date<=&month_end.+&day0_n.;
 quit;
+%end;
 
 proc sql;
 create table begining_n_&i. as
@@ -431,6 +489,29 @@ create table begining_n_m_&i. as
 select due_nd,sum(贷款余额) as b金额_&i. from data_begining_n group by due_nd;
 quit;
 
+%if &i.>4 %then %do;
+proc sql;
+create table data_ending_n as
+select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,贷款余额,
+status,od_days from payment2 where contract_no in (select contract_no from data_begining_n);
+quit;
+proc sql;
+create table data_ending_n_ as 
+select a.*,b.cut_date as nrepay_date,b.due_nd from data_ending_n as a
+left join data_begining_n as b on a.contract_no=b.contract_no;
+quit;
+data data_ending_n_a_;
+set data_ending_n_;
+if cut_date<=intnx('day',nrepay_date,30);
+run;
+proc sort data=data_ending_n_a_;by contract_no descending cut_date;run;
+proc sort data=data_ending_n_a_ nodupkey;by contract_no;run;
+proc sql;
+create table data_ending_n_a as 
+select * from data_ending_n_a_ where status in (select status from peizhibiao where id>=&i.);
+quit;
+%end;
+%else %do;
 *这里对i=3的单独做处理是因为last的流程会走完，但是now的在1号前期的时候cut_date流程没走完到16ending所以i=3的改成8;
 proc sql;
 create table data_ending_n as
@@ -442,7 +523,6 @@ or (&i.^=3 and contract_no in (select contract_no from data_begining_n) and &mon
 quit;
 proc sort data=data_ending_n(where=(cut_date<=nrepay_date)) out=data_ending_n_;by contract_no descending cut_date;run;
 proc sort data=data_ending_n_ nodupkey ;by contract_no;run;
-
 proc sql;
 create table data_ending_n_a as 
 select * from data_ending_n_ 
@@ -450,6 +530,7 @@ where (cut_date=nrepay_date and  status in (select status from peizhibiao where 
 or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3))
 ;
 quit;
+%end;
 
 proc sql;
 create table ending_n_&i. as
@@ -708,11 +789,22 @@ call symput("DDE2",COMPRESS(DDE2));*定义一个宏,上月账单开始的周期;
 run;
 
 *不含回滚;
+%if &i.>4 %then %do;
+proc sql;
+create table data_begining as 
+select * from payment2 
+where begin_label=1 and status in (select status from peizhibiao where id=&i.) and 营业部="&branch_name." and es^=1   and &last_month_begin.+&day0.<=cut_date<=&last_month_end.+&day0.;
+quit;
+proc sort data=data_begining;by contract_no cut_date;run;
+proc sort data=data_begining nodupkey;by contract_no;run;
+%end;
+%else %do;
 proc sql;
 create table data_begining as 
 select * from payment2 
 where cut_date=lastmonth_repay_date+&day0. and status in (select status from peizhibiao where id=&i.) and 营业部="&branch_name." and es^=1   and &last_month_begin.+&day0.<=cut_date<=&last_month_end.+&day0.;
 quit;
+%end;
 
 proc sql;
 create table begining_&i. as
@@ -724,6 +816,29 @@ create table begining_m_&i. as
 select due_pd,sum(贷款余额) as b金额_&i. from data_begining group by due_pd;
 quit;
 
+%if &i.>4 %then %do;
+proc sql;
+create table data_ending as
+select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,贷款余额,
+status,od_days from payment2 where contract_no in (select contract_no from data_begining);
+quit;
+proc sql;
+create table data_ending_ as 
+select a.*,b.cut_date as nrepay_date,b.due_pd from data_ending as a
+left join data_begining as b on a.contract_no=b.contract_no;
+quit;
+data data_ending_a_;
+set data_ending_;
+if cut_date<=intnx('day',nrepay_date,30);
+run;
+proc sort data=data_ending_a_;by contract_no descending cut_date;run;
+proc sort data=data_ending_a_ nodupkey;by contract_no;run;
+proc sql;
+create table data_ending_a as 
+select * from data_ending_a_ where status in (select status from peizhibiao where id>=&i.);
+quit;
+%end;
+%else %do;
 proc sql;
 create table data_ending as
 select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,贷款余额,
@@ -737,9 +852,9 @@ proc sql;
 create table data_ending_a as 
 select * from data_ending_ 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.))
-or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3))
-;
+or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3));
 quit;
+%end;
 
 proc sql;
 create table ending_&i. as
@@ -821,11 +936,22 @@ run;
 
 
 *不含回滚;
+%if &i.>4 %then %do;
+proc sql;
+create table data_begining_n as 
+select * from payment2 
+where begin_label=1 and status in (select status from peizhibiao where id=&i.)  and &month_begin.+&day0_n.<=cut_date<=&month_end.+&day0_n. and 营业部="&branch_name." and es^=1;
+quit;
+proc sort data=data_begining_n;by contract_no cut_date;run;
+proc sort data=data_begining_n nodupkey;by contract_no;run;
+%end;
+%else %do;
 proc sql;
 create table data_begining_n as 
 select * from payment2 
 where cut_date=nowmonth_repay_date+&day0_n. and status in (select status from peizhibiao where id=&i.)  and &month_begin.+&day0_n.<=cut_date<=&month_end.+&day0_n. and 营业部="&branch_name." and es^=1;
 quit;
+%end;
 
 proc sql;
 create table begining_n_&i. as
@@ -837,6 +963,29 @@ create table begining_n_m_&i. as
 select due_nd,sum(贷款余额) as b金额_&i. from data_begining_n group by due_nd;
 quit;
 
+%if &i.>4 %then %do;
+proc sql;
+create table data_ending_n as
+select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,贷款余额,
+status,od_days from payment2 where contract_no in (select contract_no from data_begining_n);
+quit;
+proc sql;
+create table data_ending_n_ as 
+select a.*,b.cut_date as nrepay_date,b.due_nd from data_ending_n as a
+left join data_begining_n as b on a.contract_no=b.contract_no;
+quit;
+data data_ending_n_a_;
+set data_ending_n_;
+if cut_date<=intnx('day',nrepay_date,30);
+run;
+proc sort data=data_ending_n_a_;by contract_no descending cut_date;run;
+proc sort data=data_ending_n_a_ nodupkey;by contract_no;run;
+proc sql;
+create table data_ending_n_a as 
+select * from data_ending_n_a_ where status in (select status from peizhibiao where id>=&i.);
+quit;
+%end;
+%else %do;
 proc sql;
 create table data_ending_n as
 select contract_no,cut_date,nowmonth_repay_date,nextmonth_repay_date,贷款余额,
@@ -851,9 +1000,9 @@ proc sort data=data_ending_n_ nodupkey ;by contract_no;run;
 proc sql;
 create table data_ending_n_a as 
 select * from data_ending_n_ 
-where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.))
-;
+where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.));
 quit;
+%end;
 
 proc sql;
 create table ending_n_&i. as
