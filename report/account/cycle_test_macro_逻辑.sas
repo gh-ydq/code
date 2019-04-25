@@ -370,13 +370,18 @@ proc sql;
 create table data_ending as
 select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,´û¿îÓà¶î,
 case when &i.>=4 then nowmonth_repay_date else lastmonth_repay_date+&day. end as nrepay_date ,
-status,od_days,due_pd from payment2 where contract_no in (select contract_no from data_begining) and &last_month_begin.+&day.<=cut_date<=&last_month_end.+&day.;
+status,od_days from payment2 where contract_no in (select contract_no from data_begining) and &last_month_begin.+&day.<=cut_date<=&last_month_end.+&day.;
 quit;
 proc sort data=data_ending(where=(cut_date<=nrepay_date)) out=data_ending_;by contract_no descending cut_date;run;
 proc sort data=data_ending_ nodupkey ;by contract_no;run;
 proc sql;
+create table data_ending_1 as 
+select a.*,b.due_pd from data_ending_ as a
+left join data_begining as b on a.contract_no=b.contract_no;
+quit;
+proc sql;
 create table data_ending_a as 
-select * from data_ending_ 
+select * from data_ending_1 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>=&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.))
 or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3));
 quit;
@@ -517,15 +522,20 @@ proc sql;
 create table data_ending_n as
 select contract_no,cut_date,nowmonth_repay_date,nextmonth_repay_date,´û¿îÓà¶î,
 case when &i.>=4 then nextmonth_repay_date else nowmonth_repay_date+&day_n. end as nrepay_date ,
-status,od_days,due_nd from payment2 
+status,od_days from payment2 
 where (&i.=3 and contract_no in (select contract_no from data_begining_n) and &month_begin.+8<=cut_date<=&month_end.) 
 or (&i.^=3 and contract_no in (select contract_no from data_begining_n) and &month_begin.+&day_n.<=cut_date<=&month_end.+&day_n.) ;
 quit;
 proc sort data=data_ending_n(where=(cut_date<=nrepay_date)) out=data_ending_n_;by contract_no descending cut_date;run;
 proc sort data=data_ending_n_ nodupkey ;by contract_no;run;
 proc sql;
+create table data_ending_n_a_ as 
+select a.*,b.due_nd from data_ending_n_ as a
+left join data_begining_n as b on a.contract_no=b.contract_no;
+quit;
+proc sql;
 create table data_ending_n_a as 
-select * from data_ending_n_ 
+select * from data_ending_n_a_ 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.))
 or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3))
 ;
@@ -663,14 +673,18 @@ proc sql;
 create table data_ending1 as
 select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,´û¿îÓà¶î,
 nowmonth_repay_date  as nrepay_date ,
-status,od_days,due_pd from payment2 where contract_no in (select contract_no from data_begining1)   and &last_month_begin.+intck("day",&last_month_begin.,&month_begin.)<=cut_date<=&last_month_end.+intck("day",&last_month_begin.,&month_begin.);
+status,od_days from payment2 where contract_no in (select contract_no from data_begining1)   and &last_month_begin.+intck("day",&last_month_begin.,&month_begin.)<=cut_date<=&last_month_end.+intck("day",&last_month_begin.,&month_begin.);
 quit;
 proc sort data=data_ending1(where=(cut_date<=nrepay_date)) out=data_ending1_;by contract_no descending cut_date;run;
 proc sort data=data_ending1_ nodupkey ;by contract_no;run;
-
+proc sql;
+create table data_ending1_1 as 
+select a.*,b.due_pd from data_ending1_ as a
+left join data_begining1 as b on a.contract_no=b.contract_no;
+quit;
 proc sql;
 create table data_ending1_a as 
-select * from data_ending1_ 
+select * from data_ending1_1 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>2)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=2)) 
 ;
 quit;
@@ -713,14 +727,18 @@ proc sql;
 create table data_ending1_n as
 select contract_no,cut_date,nowmonth_repay_date,nextmonth_repay_date,´û¿îÓà¶î,
 nextmonth_repay_date as nrepay_date ,
-status,od_days,due_nd from payment2 where contract_no in (select contract_no from data_begining1_n) and month=&nowmonth.;
+status,od_days from payment2 where contract_no in (select contract_no from data_begining1_n) and month=&nowmonth.;
 quit;
 proc sort data=data_ending1_n(where=(cut_date<=nrepay_date)) out=data_ending1_n_;by contract_no descending cut_date;run;
 proc sort data=data_ending1_n_ nodupkey ;by contract_no;run;
-
+proc sql;
+create table data_ending1_n_1 as 
+select a.*,b.due_nd from data_ending1_n_ as a
+left join data_begining1_n as b on a.contract_no=b.contract_no;
+quit;
 proc sql;
 create table data_ending1_n_a as 
-select * from data_ending1_n_ 
+select * from data_ending1_n_1 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>2)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=2)) 
 ;
 quit;
@@ -843,14 +861,18 @@ proc sql;
 create table data_ending as
 select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,´û¿îÓà¶î,
 case when &i.>=4 then nowmonth_repay_date else lastmonth_repay_date+&day. end as nrepay_date ,
-status,od_days,due_pd from payment2 where contract_no in (select contract_no from data_begining)   and &last_month_begin.+&day.<=cut_date<=&last_month_end.+&day.;
+status,od_days from payment2 where contract_no in (select contract_no from data_begining)   and &last_month_begin.+&day.<=cut_date<=&last_month_end.+&day.;
 quit;
 proc sort data=data_ending(where=(cut_date<=nrepay_date)) out=data_ending_;by contract_no descending cut_date;run;
 proc sort data=data_ending_ nodupkey ;by contract_no;run;
-
+proc sql;
+create table data_ending_1 as 
+select a.*,b.due_pd from data_ending_ as a
+left join data_begining as b on a.contract_no=b.contract_no;
+quit;
 proc sql;
 create table data_ending_a as 
-select * from data_ending_ 
+select * from data_ending_1 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.))
 or (cut_date=nrepay_date and status in (select status from peizhibiao where id>=&i.)  and  od_days>=30*(&i.-3));
 quit;
@@ -990,16 +1012,20 @@ proc sql;
 create table data_ending_n as
 select contract_no,cut_date,nowmonth_repay_date,nextmonth_repay_date,´û¿îÓà¶î,
 case when &i.>=4 then nextmonth_repay_date else nowmonth_repay_date+&day_n. end as nrepay_date ,
-status,od_days,due_nd from payment2 
+status,od_days from payment2 
 where (&i.=3 and contract_no in (select contract_no from data_begining_n) and &month_begin.+8<=cut_date<=&month_end.) 
 or (&i.^=3 and contract_no in (select contract_no from data_begining_n) and &month_begin.+&day_n.<=cut_date<=&month_end.+&day_n.) ;
 quit;
 proc sort data=data_ending_n(where=(cut_date<=nrepay_date)) out=data_ending_n_;by contract_no descending cut_date;run;
 proc sort data=data_ending_n_ nodupkey ;by contract_no;run;
-
+proc sql;
+create table data_ending_n_a_ as 
+select a.*,b.due_nd from data_ending_n_ as a
+left join data_begining_n as b on a.contract_no=b.contract_no;
+quit;
 proc sql;
 create table data_ending_n_a as 
-select * from data_ending_n_ 
+select * from data_ending_n_a_ 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>&i.)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=&i.));
 quit;
 %end;
@@ -1116,14 +1142,18 @@ proc sql;
 create table data_ending1 as
 select contract_no,cut_date,nowmonth_repay_date,lastmonth_repay_date,´û¿îÓà¶î,
 nowmonth_repay_date  as nrepay_date ,
-status,od_days,due_pd from payment2 where contract_no in (select contract_no from data_begining1)  and &last_month_begin.+intck("day",&last_month_begin.,&month_begin.)<=cut_date<=&last_month_end.+intck("day",&last_month_begin.,&month_begin.) ;
+status,od_days from payment2 where contract_no in (select contract_no from data_begining1)  and &last_month_begin.+intck("day",&last_month_begin.,&month_begin.)<=cut_date<=&last_month_end.+intck("day",&last_month_begin.,&month_begin.) ;
 quit;
 proc sort data=data_ending1(where=(cut_date<=nrepay_date)) out=data_ending1_;by contract_no descending cut_date;run;
 proc sort data=data_ending1_ nodupkey ;by contract_no;run;
-
+proc sql;
+create table data_ending1_1 as 
+select a.*,b.due_pd from data_ending1_ as a
+left join data_begining1 as b on a.contract_no=b.contract_no;
+quit;
 proc sql;
 create table data_ending1_a as 
-select * from data_ending1_ 
+select * from data_ending1_1 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>2)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=2)) 
 ;
 quit;
@@ -1166,14 +1196,18 @@ proc sql;
 create table data_ending1_n as
 select contract_no,cut_date,nowmonth_repay_date,nextmonth_repay_date,´û¿îÓà¶î,
 nextmonth_repay_date as nrepay_date ,
-status,od_days,due_nd from payment2 where contract_no in (select contract_no from data_begining1_n) and month=&nowmonth.;
+status,od_days from payment2 where contract_no in (select contract_no from data_begining1_n) and month=&nowmonth.;
 quit;
 proc sort data=data_ending1_n(where=(cut_date<=nrepay_date)) out=data_ending1_n_;by contract_no descending cut_date;run;
 proc sort data=data_ending1_n_ nodupkey ;by contract_no;run;
-
+proc sql;
+create table data_ending1_n_1 as 
+select a.*,b.due_nd from data_ending1_n_ as a
+left join data_begining1_n as b on a.contract_no=b.contract_no;
+quit;
 proc sql;
 create table data_ending1_n_a as 
-select * from data_ending1_n_ 
+select * from data_ending1_n_1 
 where (cut_date=nrepay_date and  status in (select status from peizhibiao where id>2)) or (cut_date<nrepay_date and  status in (select status from peizhibiao where id>=2)) 
 ;
 quit;
