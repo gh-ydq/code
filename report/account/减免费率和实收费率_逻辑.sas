@@ -85,7 +85,7 @@ keep contract_no repay_date clear_date CURR_PERIOD OVERDUE_DAYS CURR_RECEIPT_AMT
 run;
 data repay_plan;
 set account.repay_plan;
-qigong=CURR_RECEIVE_CAPITAL_AMT+CURR_RECEIVE_INTEREST_AMT;
+qigong=sum(CURR_RECEIVE_INTEREST_AMT,CURR_RECEIVE_SERVICE_FEE_AMT,CURR_RECEIVE_CAPITAL_AMT,PARTNER_SERVICE_FEE_AMT,MANAGEMENT_SERVICE_FEE_AMT);
 run;
 proc sort data=repay_plan;by qigong;run;
 /*data aa1;*/
@@ -194,14 +194,14 @@ set bill_hm4;
 if 阶段='[1,15]';
 run;
 proc sort data=bill_hm5_1;by descending 应收罚息;run;
-filename DD DDE 'EXCEL|[逾期1-15天应收罚息及豁免情况.xlsx]汇总!r4c1:r40c4';
+filename DD DDE 'EXCEL|[逾期1-15天应收罚息及豁免情况.xlsx]汇总!r4c1:r50c4';
 data _null_;set bill_hm5_1;file DD;put 营业部 应收罚息 减免罚息 实收罚息;run;
 data bill_hm5_2;
 set bill_hm4;
 if 阶段='[16,+)';
 run;
 proc sort data=bill_hm5_2;by descending 应收罚息;run;
-filename DD DDE 'EXCEL|[逾期16天以上应收罚息及豁免情况.xlsx]汇总!r4c1:r40c4';
+filename DD DDE 'EXCEL|[逾期16天以上应收罚息及豁免情况.xlsx]汇总!r4c1:r50c4';
 data _null_;set bill_hm5_2;file DD;put 营业部 应收罚息 减免罚息 实收罚息;run;
 proc sql;
 create table bill_hm5_0 as 
@@ -214,9 +214,9 @@ left join bill_hm5_1 as b on a.营业部=b.营业部
 left join bill_hm5_2 as c on a.营业部=c.营业部;
 quit;
 proc sort data=bill_hm5;by descending 应收罚息;run;
-filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c1:r40c4';
+filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c1:r50c4';
 data _null_;set bill_hm5;file DD;put 营业部 应收罚息 减免罚息 实收罚息;run;
-filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c6:r40c8';
+filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c6:r50c8';
 data _null_;set bill_hm5;file DD;put 应收罚息_A1 减免罚息_A1 实收罚息_A1;run;
-filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c10:r40c12';
+filename DD DDE 'EXCEL|[逾期应收罚息及豁免情况.xlsx]汇总!r4c10:r50c12';
 data _null_;set bill_hm5;file DD;put 应收罚息_A2 减免罚息_A2 实收罚息_A2;run;
