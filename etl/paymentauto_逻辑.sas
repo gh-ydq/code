@@ -617,6 +617,7 @@ if bill_code ="BLC201708021745066848390916" then do;CLEAR_DATE=mdy(1,31,2019);OV
 if bill_code ="BLC201708021745066848390917" then do;CLEAR_DATE=mdy(2,28,2019);OVERDUE_DAYS=47;BILL_STATUS="0000";end;
 if bill_code ="BLC201704261733437061984021" then do;CLEAR_DATE=mdy(3,1,2019);OVERDUE_DAYS=25;BILL_STATUS="0000";end;
 if bill_code ="BLC201711171623547007902315" then do;CLEAR_DATE=mdy(3,31,2019);OVERDUE_DAYS=35;BILL_STATUS="0000";end;
+if bill_code ="BLC201704131804019756857622" then do;CLEAR_DATE=mdy(4,30,2019);OVERDUE_DAYS=69;BILL_STATUS="0000";end;
 
 *ÔÂµ×ÌáÇ°½áÇåµÄ¿Í»§;
 if contract_no="C2017080410211770435844" and CURR_PERIOD<8 then do ;CLEAR_DATE=REPAY_DATE;end;
@@ -1358,6 +1359,16 @@ if contract_no="C2017112014374389197751" and cut_date=mdy(3,24,2019) then »¹¿î_µ
 if contract_no="C2017121414464569454887" and cut_date=mdy(4,4,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017111716235470079023" and cut_date=mdy(4,9,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017110613581169751106" and cut_date=mdy(4,24,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2016091411021792714851" and cut_date=mdy(4,14,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017042021122704590085" and cut_date=mdy(4,11,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017080116134188968878" and cut_date=mdy(4,30,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017083018003803005361" and cut_date=mdy(4,21,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017091314334113850467" and cut_date=mdy(4,3,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017102711351662977886" and cut_date=mdy(4,15,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017110219532111928079" and cut_date=mdy(4,22,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017110309463868210291" and cut_date=mdy(4,24,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017111715371459588405" and cut_date=mdy(4,6,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2019011710371932808633" and cut_date=mdy(4,13,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 
 rename outstanding=´û¿îÓà¶î outstanding_capital=´û¿îÓà¶î_Ê£Óà±¾½ð²¿·Ö;
 keep contract_no ¿Í»§ÐÕÃû cut_date repay_date clear_date od_days od_periods »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬ »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸ Éí·ÝÖ¤ºÅÂë
@@ -1394,6 +1405,17 @@ if contract_no="C2017112014374389197751" and cut_date=mdy(3,24,2019) then »¹¿î_µ
 if contract_no="C2017121414464569454887" and cut_date=mdy(4,4,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017111716235470079023" and cut_date=mdy(4,9,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017110613581169751106" and cut_date=mdy(4,24,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+
+if contract_no="C2016091411021792714851" and cut_date=mdy(4,14,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017042021122704590085" and cut_date=mdy(4,11,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017080116134188968878" and cut_date=mdy(4,30,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017083018003803005361" and cut_date=mdy(4,21,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017091314334113850467" and cut_date=mdy(4,3,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017102711351662977886" and cut_date=mdy(4,15,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017110219532111928079" and cut_date=mdy(4,22,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017110309463868210291" and cut_date=mdy(4,24,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017111715371459588405" and cut_date=mdy(4,6,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2019011710371932808633" and cut_date=mdy(4,13,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 
 rename outstanding=´û¿îÓà¶î outstanding_capital=´û¿îÓà¶î_Ê£Óà±¾½ð²¿·Ö;
 keep contract_no ¿Í»§ÐÕÃû cut_date repay_date clear_date od_days od_periods »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬ »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸ Éí·ÝÖ¤ºÅÂë
