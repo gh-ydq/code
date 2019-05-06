@@ -39,14 +39,14 @@
 /*run;*/
 
 
-%let month="201903";*报表月;
+%let month="201904";*报表月;
 
 data vinDDE;
 set repayfin.payment_g;
 format 放款月份1 yymmdd10.;
 放款月份1=intnx("month",loan_date,0,"b");
 if not kindex(产品小类,"米粒");
-if month^="201904";*当前月;
+if month^="201905";*当前月;
 run;
 
 *【营业部】;
@@ -151,7 +151,7 @@ proc sql;
 create table vinDDE1 as
 select a.*,b.调整费率,d.MODEL_SCORE_LEVEL,d.group_Level,d.天启分档,e.SELF_QUERY_06_MONTH_FREQUENCY as 近6个月本人查询次数 from vindde as a
 left join repayFna.interest_adjust as b  on a.contract_no=b.contract_no
-left join repayFin.strategy as d on a.apply_code=d.apply_code
+left join repayFin.strategy as d on a.contract_no=d.contract_no
 left join credit_report_1 as e on a.apply_code=e.apply_code;
 quit;
 data vinDDE;
@@ -186,6 +186,22 @@ data _null_;set kan_fk;file DD;put 放款月份1;run;
 filename DD DDE "EXCEL|[MonthlyVintageVar.xlsx]放款占比!r239c5:r288c5";
 data _null_;set kan_fk;file DD;put 合同金额;run;
 
+*剩余本金;
+
+proc sql;
+create table kan_sy as
+select 放款月份1,sum(贷款余额_本金部分) as 剩余本金 ,count(贷款余额_本金部分) as 剩余数量 
+from vinDDE(where=(month=&month. and 产品大类 ^="续贷" and status not in ("11_Settled","09_ES") )) group by 放款月份1;
+quit;
+proc sql;
+create table kan_sy1 as
+select a.放款月份1,b.剩余本金,b.剩余数量 from kan_fk as a
+left join kan_sy as b on a.放款月份1=b.放款月份1;
+quit;
+filename DD DDE "EXCEL|[MonthlyVintageVar.xlsx]放款占比!r162c6:r211c6";
+data _null_;set kan_sy1;file DD;put 剩余数量;run;
+filename DD DDE "EXCEL|[MonthlyVintageVar.xlsx]放款占比!r239c6:r288c6";
+data _null_;set kan_sy1;file DD;put 剩余本金;run;
 /*proc import datafile="E:\guan\催收报表\vintage\vintage配置表.xls"*/
 /*out=var dbms=excel replace;*/
 /*SHEET="var";*/
@@ -203,11 +219,20 @@ i=1;
 run;
 %macro Var();
 %do i =1 %to &lpn.;
-	data _null_;
-	format j $2.;
-	j=6+&i.;
-	call symput('j',j);
-	run;
+	%if &i.>3 %then %do;
+		data _null_;
+		format j $2.;
+		j=6+&i.;
+		call symput('j',j);
+		run;
+	%end;
+	%else %do;
+		data _null_;
+		format j $1.;
+		j=6+&i.;
+		call symput('j',j);
+		run;
+	%end;
 	proc sql;
 		create table kan_fk0 as
 		select 放款月份1,sum(合同金额) as 合同金额 ,count(合同金额) as 合同数量 
