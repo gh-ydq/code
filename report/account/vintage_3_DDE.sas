@@ -141,6 +141,94 @@ filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL!r239c7:r288c56";
 data _null_;set caca2a;file DD;put a_1 a_2 a_3 a_4 a_5 a_6 a_7 a_8 a_9 a_10 a_11 a_12 a_13 a_14 a_15 a_16 a_17 a_18 a_19 a_20 a_21 a_22 a_23 a_24 a_25 a_26 a_27 a_28 a_29 a_30 a_31 a_32 a_33 a_34 a_35 a_36
 									a_37 a_38 a_39 a_40 a_41 a_42 a_43 a_44 a_45 a_46 a_47 a_48 a_49 a_50;run;
 
+*()-Total 自营;
+*放款;
+data vinDDE_zy;
+set vinDDE;
+if kindex(营业部,'上海') or kindex(营业部,'合肥') or kindex(营业部,'杭州') or kindex(营业部,'宁波') or kindex(营业部,'邵阳') or kindex(营业部,'广州') or kindex(营业部,'惠州')
+	or kindex(营业部,'南宁') or kindex(营业部,'汕头') or kindex(营业部,'海口') or kindex(营业部,'北京') or kindex(营业部,'天津') or kindex(营业部,'成都') 
+	or kindex(营业部,'乌鲁木齐') or kindex(营业部,'伊犁');
+run;
+proc sql;
+create table kan_fk as
+select 放款月份1,sum(合同金额) as 合同金额 ,count(合同金额) as 合同数量 
+from vinDDE_zy(where=(month=&month. and 产品大类 ^="续贷")) group by 放款月份1;
+quit;
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r162c3:r211c3";
+data _null_;set kan_fk;file DD;put 放款月份1;run;
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r162c5:r211c5";
+data _null_;set kan_fk;file DD;put 合同数量;run;
+
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r239c3:r288c3";
+data _null_;set kan_fk;file DD;put 放款月份1;run;
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r239c5:r288c5";
+data _null_;set kan_fk;file DD;put 合同金额;run;
+
+*剩余本金;
+
+proc sql;
+create table kan_sy as
+select 放款月份1,sum(贷款余额_本金部分) as 剩余本金 ,count(贷款余额_本金部分) as 剩余数量 
+from vinDDE_zy(where=(month=&month. and 产品大类 ^="续贷" and status not in ("11_Settled","09_ES") )) group by 放款月份1;
+quit;
+proc sql;
+create table kan_sy1 as
+select a.放款月份1,b.剩余本金,b.剩余数量 from kan_fk as a
+left join kan_sy as b on a.放款月份1=b.放款月份1;
+quit;
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r162c6:r211c6";
+data _null_;set kan_sy1;file DD;put 剩余数量;run;
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r239c6:r288c6";
+data _null_;set kan_sy1;file DD;put 剩余本金;run;
+
+*vintage30+个数;
+
+proc sql;
+create table caca1 as
+select 放款月份1 as 放款月份,mob,count(未还本金_m1_plus) as ftcount  from vinDDE_zy(where=(产品大类 ^="续贷")) group by 放款月份1,mob ;
+quit;
+
+proc sort data=caca1;by 放款月份 mob;run;
+proc transpose data=caca1 out=caca2(drop=_NAME_)  prefix=a_;
+by 放款月份;
+id mob;
+var ftcount;
+run;
+
+proc sql;
+create table caca2a as
+select a.放款月份1 ,b.* from kan_fk as a
+left join caca2 as b on a.放款月份1=b.放款月份;
+quit;
+
+
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r162c7:r211c56";
+data _null_;set caca2a;file DD;put a_1 a_2 a_3 a_4 a_5 a_6 a_7 a_8 a_9 a_10 a_11 a_12 a_13 a_14 a_15 a_16 a_17 a_18 a_19 a_20 a_21 a_22 a_23 a_24 a_25 a_26 a_27 a_28 a_29 a_30 a_31 a_32 a_33 a_34 a_35 a_36
+									a_37 a_38 a_39 a_40 a_41 a_42 a_43 a_44 a_45 a_46 a_47 a_48 a_49 a_50;run;
+
+*vintage30+剩余本金;
+proc sql;
+create table caca1 as
+select 放款月份1 as 放款月份,mob,sum(未还本金_m1_plus) as ftmount  from vinDDE_zy(where=(产品大类 ^="续贷")) group by 放款月份1,mob ;
+quit;
+
+proc sort data=caca1;by 放款月份 mob;run;
+proc transpose data=caca1 out=caca2(drop=_NAME_)  prefix=a_;
+by 放款月份;
+id mob;
+var ftmount;
+run;
+proc sql;
+create table caca2a as
+select a.放款月份1 ,b.* from kan_fk as a
+left join caca2 as b on a.放款月份1=b.放款月份;
+quit;
+
+filename DD DDE "EXCEL|[MonthlyVintage.xlsx]TOTAL-自营!r239c7:r288c56";
+data _null_;set caca2a;file DD;put a_1 a_2 a_3 a_4 a_5 a_6 a_7 a_8 a_9 a_10 a_11 a_12 a_13 a_14 a_15 a_16 a_17 a_18 a_19 a_20 a_21 a_22 a_23 a_24 a_25 a_26 a_27 a_28 a_29 a_30 a_31 a_32 a_33 a_34 a_35 a_36
+									a_37 a_38 a_39 a_40 a_41 a_42 a_43 a_44 a_45 a_46 a_47 a_48 a_49 a_50;run;
+
+
 *()-营业部;
 /*proc import datafile="E:\guan\催收报表\vintage\vintage配置表.xls"*/
 /*out=branch dbms=excel replace;*/
