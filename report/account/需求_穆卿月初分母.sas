@@ -33,6 +33,7 @@ run;
 data atest;
 set repayfin.payment_daily;
 if es^=1;
+if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
 if cut_date=&l_month_end.;
 if &pde.-15<=repay_date<=&l_month_end.;
 if od_days<=&l_month_end.-&pde.+15;
@@ -50,6 +51,7 @@ run;
 
 data test;
 set account.bill_main;
+if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
 if bill_status^="0003";
 if CLEAR_DATE>=&l_month_end. or CLEAR_DATE="" ;*是为了剔除小雨点结清的;
 if &l_month_end.+1<=repay_date<=&mde.-16;
@@ -129,6 +131,7 @@ format 贷款余额_2月前_C_本金部分   comma8.2;
 if first.contract_no then do;贷款余额_2月前_C_本金部分=0;end;
 end;
 if month=&this_mon.;
+if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
 keep contract_no 营业部 贷款余额_本金部分 贷款余额_1月前_C 贷款余额_2月前_C 贷款余额_1月前_C_本金部分 贷款余额_2月前_C_本金部分 month;
 run;
 
@@ -141,6 +144,10 @@ sum(贷款余额_2月前_C) as c贷款余额1
 from aa 
 group by 营业部;
 quit;
+data C2_mx;
+set aa;
+if 贷款余额_2月前_C>0;
+run;
 
 
 *---------------------一个月前C---------------------------------------*;
@@ -154,6 +161,10 @@ sum(贷款余额_1月前_C) as c贷款余额1
 from aa 
 group by 营业部;
 quit;
+data C1_mx;
+set aa;
+if 贷款余额_1月前_C>0;
+run;
 
 *---------------------上月准M2客户客户明细---------------------------------------*;
 
@@ -199,3 +210,5 @@ run;
 /*PROC EXPORT DATA=C2 OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="2个月前的C";run;*/
 /*PROC EXPORT DATA=dept1_m OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="1个月前准M2客户明细";run;*/
 /*PROC EXPORT DATA=aaa OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="2个月前准M2客户明细";run;*/
+/*PROC EXPORT DATA=C1_mx OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="1个月前的C明细";run;*/
+/*PROC EXPORT DATA=C2_mx OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="2个月前的C明细";run;*/

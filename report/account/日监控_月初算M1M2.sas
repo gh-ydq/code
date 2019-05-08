@@ -32,6 +32,7 @@ cut_date =intnx("month",today(),-1,"end");
 RUN;
 data cs_1;
 set yc.payment;
+if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
 if cut_date =intnx("month",today(),-1,"end");
 if branch_code ^="105";
 if branch_code = "13" then 营业部 = "上海福州路营业部";
