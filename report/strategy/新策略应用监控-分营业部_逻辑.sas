@@ -1,6 +1,12 @@
 *需接着新策略应用监控跑;
 
 /*x 'E:\guan\策略监控\新策略应用监控-分营业部.xlsx';*/
+/*proc import datafile="E:\guan\策略监控\新策略配置表.xlsx"*/
+/*out=test_y_3_ dbms=excel replace;*/
+/*SHEET="营业部";*/
+/*scantext=no;*/
+/*getnames=yes;*/
+/*run;*/
 
 data test_y_1;
 set test_r_2;
@@ -48,12 +54,12 @@ quit;
 data test_y_3;
 set test_y_2_1 test_y_2_2 test_y_2_3;
 run;
-proc import datafile="E:\guan\策略监控\新策略配置表.xlsx"
-out=test_y_3_ dbms=excel replace;
-SHEET="营业部";
-scantext=no;
-getnames=yes;
-run;
+/*proc import datafile="E:\guan\策略监控\新策略配置表.xlsx"*/
+/*out=test_y_3_ dbms=excel replace;*/
+/*SHEET="营业部";*/
+/*scantext=no;*/
+/*getnames=yes;*/
+/*run;*/
 proc sql;
 create table test_y_4 as 
 select a.* ,b.* from test_y_3_ as a
