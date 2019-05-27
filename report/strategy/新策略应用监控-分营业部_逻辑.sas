@@ -66,5 +66,5 @@ select a.* ,b.* from test_y_3_ as a
 left join test_y_3 as b on a.营业部=b.营业部;
 quit;
 proc sort data=test_y_4;by nums;run;
-filename DD DDE "EXCEL|[新策略应用监控-分营业部.xlsx]营业部MTD!r37c2:r67c21";
+filename DD DDE "EXCEL|[新策略应用监控-分营业部.xlsx]营业部MTD!r34c2:r62c21";
 data _null_;set test_y_4;file DD;put 进件量 征信等拒绝量 旧评分拒绝量 新模型 天启黑名单 融360 电话邦 自动拒绝 审批数量 审批通过量 A通过 B通过 C通过 D通过 E通过 A进件 B进件 C进件 D进件 E进件;run;
