@@ -397,10 +397,10 @@ data test_r_5;
 set test_r_4;
 if Date>=&db.;
 run;
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]Sheet2!r5c3:r34c12";
+filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]Sheet2!r5c3:r35c12";
 data _null_;set test_r_5;file DD;put 进件量 征信等拒绝量 旧评分拒绝量 新模型 天启黑名单重 天启黑名单非重 天启黑名单 融360重 融360非重 融360;run;
 
-filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]Sheet2!r5c13:r34c26";
+filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]Sheet2!r5c13:r35c26";
 data _null_;set test_r_5;file DD;put 电话邦重 电话邦非重 电话邦 审批通过量 审批数量 错误 自动拒绝 旧评分代码 新模型代码 天启黑名单代码 融360代码 电话邦代码 分数变动 非自动拒绝变自动拒绝;run;
 
 *各分档情况的通过率;
