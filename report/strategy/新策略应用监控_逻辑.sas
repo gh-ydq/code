@@ -337,9 +337,10 @@ if third_refuse_code='R751' then 旧评分=1;else 旧评分=0;
 if first_refuse_code='R757' then 新模型=1;else 新模型=0;
 if first_refuse_code='R754' then 电话邦=1;else 电话邦=0;
 if first_refuse_code='R755' then 融360=1;else 融360=0;
+if first_refuse_code='R758' then 汇盾=1;else 汇盾=0;
 if first_refuse_code in ('R756',"R743") then 天启黑名单=1;else 天启黑名单=0;
 if first_refuse_code^='' then 自动拒绝=1;else 自动拒绝=0;
-if 自动拒绝=1 and 旧评分=0 and 天启黑名单=0 and 电话邦=0 and 融360=0 and 新模型=0 then 其他拒绝=1;else 其他拒绝=0;
+if 自动拒绝=1 and 旧评分=0 and 天启黑名单=0 and 电话邦=0 and 融360=0 and 新模型=0 and 汇盾=0 then 其他拒绝=1;else 其他拒绝=0;
 if apply_code='PL154140087720102300000886' then do;天启黑名单=1;融360=0;end;
 
 if rong360=1 then 融360代码=1;else 融360代码=0;
@@ -351,12 +352,14 @@ if tq_black=1 then 天启黑名单代码=1;else 天启黑名单代码=0;
 if 批核状态 in ('REFUSE','ACCEPT') then 审批数量=1;else 审批数量=0;
 if 批核状态='ACCEPT' then 审批通过=1;else 审批通过=0;
 
-if 天启黑名单代码=1 and (旧评分=0 and 新模型=0 and 其他拒绝=0) then 天启黑名单非重=1;else 天启黑名单非重=0;
-if 天启黑名单代码=1 and (旧评分=1 or 新模型=1 or 其他拒绝=1) then 天启黑名单重=1;else 天启黑名单重=0;
-if 融360代码=1 and (旧评分=0 and 天启黑名单=0 and 其他拒绝=0  and 新模型=0) then 融360非重=1;else 融360非重=0;
-if 融360代码=1 and (旧评分=1 or 天启黑名单=1 or 其他拒绝=1  or 新模型=1) then 融360重=1;else 融360重=0;
-if 电话邦代码=1 and (旧评分=0 and 天启黑名单=0 and 其他拒绝=0  and 融360=0) then 电话邦非重=1;else 电话邦非重=0;
-if 电话邦代码=1 and (旧评分=1 or 天启黑名单=1 or 其他拒绝=1 or 融360=1) then 电话邦重=1;else 电话邦重=0;
+if 汇盾=1 and (旧评分=0 and 新模型=0 and 其他拒绝=0) then 汇盾非重=1;else 汇盾非重=0;
+if 汇盾=1 and (旧评分=1 or 新模型=1 or 其他拒绝=1) then 汇盾重=1;else 汇盾重=0;
+if 天启黑名单代码=1 and (旧评分=0 and 新模型=0 and 其他拒绝=0 and 汇盾=0) then 天启黑名单非重=1;else 天启黑名单非重=0;
+if 天启黑名单代码=1 and (旧评分=1 or 新模型=1 or 其他拒绝=1 or 汇盾=1) then 天启黑名单重=1;else 天启黑名单重=0;
+if 融360代码=1 and (旧评分=0 and 天启黑名单=0 and 其他拒绝=0  and 新模型=0  and 汇盾=0) then 融360非重=1;else 融360非重=0;
+if 融360代码=1 and (旧评分=1 or 天启黑名单=1 or 其他拒绝=1  or 新模型=1 or 汇盾=1) then 融360重=1;else 融360重=0;
+if 电话邦代码=1 and (旧评分=0 and 天启黑名单=0 and 其他拒绝=0  and 融360=0  and 汇盾=0) then 电话邦非重=1;else 电话邦非重=0;
+if 电话邦代码=1 and (旧评分=1 or 天启黑名单=1 or 其他拒绝=1 or 融360=1 or 汇盾=1) then 电话邦重=1;else 电话邦重=0;
 
 if region^=branch_class and branch_class^='' then 营业部分类错误=1;else 营业部分类错误=0;
 if model_score_level^=分档 and model_score_level^='' then 分档错误=1;else 分档错误=0;
@@ -380,7 +383,7 @@ proc sort data=test_r_2;by apply_code;run;
 proc sort data=test_r_2 nodupkey;by apply_code;run;
 proc sql;
 create table test_r_3 as
-select Date,count(apply_code) as 进件量,sum(其他拒绝) as 征信等拒绝量,sum(旧评分) as 旧评分拒绝量,sum(新模型) as 新模型,sum(天启黑名单) as 天启黑名单,
+select Date,count(apply_code) as 进件量,sum(其他拒绝) as 征信等拒绝量,sum(旧评分) as 旧评分拒绝量,sum(新模型) as 新模型,sum(汇盾) as 汇盾,sum(汇盾非重) as 汇盾非重,sum(汇盾重) as 汇盾重,sum(天启黑名单) as 天启黑名单,
 	sum(天启黑名单重) as 天启黑名单重,sum(天启黑名单非重) as 天启黑名单非重,sum(融360) as 融360,sum(融360重) as 融360重,sum(自动拒绝) as 自动拒绝,
 	sum(融360非重) as 融360非重,sum(电话邦) as 电话邦,sum(电话邦重) as 电话邦重,sum(电话邦非重) as 电话邦非重,sum(审批通过) as 审批通过量,sum(审批数量) as 审批数量,
 	max(错误) as 错误,sum(旧评分代码) as 旧评分代码,sum(新模型代码) as 新模型代码,sum(天启黑名单代码) as 天启黑名单代码,sum(融360代码) as 融360代码,sum(电话邦代码) as 电话邦代码,
@@ -398,7 +401,7 @@ set test_r_4;
 if Date>=&db.;
 run;
 filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]Sheet2!r5c3:r35c12";
-data _null_;set test_r_5;file DD;put 进件量 征信等拒绝量 旧评分拒绝量 新模型 天启黑名单重 天启黑名单非重 天启黑名单 融360重 融360非重 融360;run;
+data _null_;set test_r_5;file DD;put 进件量 征信等拒绝量 旧评分拒绝量 新模型 汇盾 天启黑名单非重 天启黑名单 融360重 融360非重 融360;run;
 
 filename DD DDE "EXCEL|[新模型—电话邦命中情况.xlsx]Sheet2!r5c13:r35c26";
 data _null_;set test_r_5;file DD;put 电话邦重 电话邦非重 电话邦 审批通过量 审批数量 错误 自动拒绝 旧评分代码 新模型代码 天启黑名单代码 融360代码 电话邦代码 分数变动 非自动拒绝变自动拒绝;run;
@@ -465,13 +468,13 @@ end;
 run;
 proc sql;
 create table test_r_6 as 
-select month,sum(进件量) as a01_进件量,sum(征信等拒绝量) as a02_征信等拒绝量,sum(旧评分拒绝量) as a03_旧评分拒绝量,sum(新模型) as a04_新模型,sum(天启黑名单重) as a05_天启黑名单重,sum(天启黑名单非重) as a06_天启黑名单非重,
+select month,sum(进件量) as a01_进件量,sum(征信等拒绝量) as a02_征信等拒绝量,sum(旧评分拒绝量) as a03_旧评分拒绝量,sum(新模型) as a04_新模型,sum(汇盾) as a05_汇盾,sum(天启黑名单非重) as a06_天启黑名单非重,
 	sum(天启黑名单) as a07_天启黑名单,sum(融360重) as a08_融360重,sum(融360非重) as a09_融360非重,sum(融360) as a10_融360,sum(电话邦重) as a11_电话邦重,sum(电话邦非重) as a12_电话邦非重,sum(电话邦) as a13_电话邦,
 	sum(审批通过量) as a17_审批通过量,sum(审批数量) as a18_审批数量,sum(自动拒绝) as a14_自动拒绝,sum(分数变动) as a15_分数变动,sum(非自动拒绝变自动拒绝) as a16_非自动拒绝变自动拒绝
 from test_r_5_ group by month;
 quit;
 proc transpose data=test_r_6 out=test_r_7 prefix=month_;
-	var a01_进件量 a02_征信等拒绝量 a03_旧评分拒绝量 a04_新模型 a05_天启黑名单重 a06_天启黑名单非重 a07_天启黑名单 a08_融360重 a09_融360非重 a10_融360 a11_电话邦重 a12_电话邦非重 a13_电话邦
+	var a01_进件量 a02_征信等拒绝量 a03_旧评分拒绝量 a04_新模型 a05_汇盾 a06_天启黑名单非重 a07_天启黑名单 a08_融360重 a09_融360非重 a10_融360 a11_电话邦重 a12_电话邦非重 a13_电话邦
 		a14_自动拒绝 a15_分数变动 a16_非自动拒绝变自动拒绝 a17_审批通过量 a18_审批数量;
 	ID month;
 run;
