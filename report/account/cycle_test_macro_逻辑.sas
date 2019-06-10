@@ -160,8 +160,8 @@ run;
 *快结清的如果不弄，那个lag会用其他客户的合同编号的repay_date的due day;
 
 *去掉提前结清;
-proc sort data=account.bill_main;by contract_no  ID ;run;
-proc sort data=account.bill_main nodupkey out=bill_main ;by contract_no CURR_PERIOD;run;
+proc sort data=account.bill_main out=bill_main ;by contract_no  ID ;run;
+proc sort data=bill_main nodupkey ;by contract_no CURR_PERIOD;run;
 
 *找出最后一期账单;
 proc sort data=bill_main  ;by contract_no descending CURR_PERIOD;run;
