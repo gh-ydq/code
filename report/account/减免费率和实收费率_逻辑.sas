@@ -14,7 +14,7 @@
 /*x  "E:\guan\催收报表\逾期豁免\逾期16天以上应收罚息及豁免情况.xlsx"; */
 /*x  "E:\guan\催收报表\逾期豁免\逾期应收罚息及豁免情况.xlsx"; */
 
-%let month="201905";*修改为本月月份;
+%let month="201906";*修改为本月月份;
 
 data null;
 format dt yymmdd10.;
