@@ -1,27 +1,27 @@
-*Ctl_task_assignÖĞµÄstatus;
-*0£ºÎ´·ÖÅä
-*1£ºÃ¿ÈÕĞÂ°¸¼ş
-*2£º½øĞĞÖĞµÄÈÎÎñ
-*3£ºÈÎÎñÒÑÍê³É
-*-1£º´ú±íÕâ¸öÁ÷³ÌÒÑ¾­¹Ø±Õ
-*-2:Á÷³ÌÒÑ¾­¹Ø±Õ£¬ÈÎÎñÒÑ±»µ÷Õû;
-
+*Ctl_task_assignä¸­çš„status;
+*0ï¼šæœªåˆ†é…
+*1ï¼šæ¯æ—¥æ–°æ¡ˆä»¶
+*2ï¼šè¿›è¡Œä¸­çš„ä»»åŠ¡
+*3ï¼šä»»åŠ¡å·²å®Œæˆ
+*-1ï¼šä»£è¡¨è¿™ä¸ªæµç¨‹å·²ç»å…³é—­
+*-2:æµç¨‹å·²ç»å…³é—­ï¼Œä»»åŠ¡å·²è¢«è°ƒæ•´;
 
 
 /*option compress = yes validvarname = any;*/
-/*libname res  'F:\A_offline_zky\kangyi\data_download\Ô­±í\res';*/
-/*libname csdata 'F:\A_offline_zky\kangyi\data_download\Ô­±í\csdata';*/
-/*libname account 'F:\A_offline_zky\kangyi\data_download\Ô­±í\account';*/
-/*libname repayfin 'F:\A_offline_zky\kangyi\data_download\ÖĞ¼ä±í\repayAnalysis';*/
-/*libname zq "F:\A_offline_zky\A_offline\daily\ÈÕ¼à¿Ø\finData";*/
-/*libname cd "F:\A_offline_zky\A_offline\weekly\V·ÖĞĞÓâÆÚÈÕ±¨\chengdu_data";*/
+/*libname res  'F:\A_offline_zky\kangyi\data_download\åŸè¡¨\res';*/
+/*libname csdata 'F:\A_offline_zky\kangyi\data_download\åŸè¡¨\csdata';*/
+/*libname account 'F:\A_offline_zky\kangyi\data_download\åŸè¡¨\account';*/
+/*libname repayfin 'F:\A_offline_zky\kangyi\data_download\ä¸­é—´è¡¨\repayAnalysis';*/
+/*libname zq "F:\A_offline_zky\A_offline\daily\æ—¥ç›‘æ§\finData";*/
+/*libname cd "F:\A_offline_zky\A_offline\weekly\Våˆ†è¡Œé€¾æœŸæ—¥æŠ¥\chengdu_data";*våˆ†è¡Œæ˜ŸæœŸä¸€è·‘éœ€è¦;*/
+
 
 data _null_;
-format date  start_date  fk_month_begin month_begin  end_date last_month_end last_month_begin month_end yymmdd10.;*¶¨ÒåÊ±¼ä±äÁ¿¸ñÊ½;
+format date  start_date  fk_month_begin month_begin  end_date last_month_end last_month_begin month_end yymmdd10.;*å®šä¹‰æ—¶é—´å˜é‡æ ¼å¼;
 if day(today())=1 then date=intnx("month",today(),-1,"end");
 else date=today()-1;
 /*date = mdy(12,31,2017);*/
-call symput("tabledate",date);*¶¨ÒåÒ»¸öºê;
+call symput("tabledate",date);*å®šä¹‰ä¸€ä¸ªå®;
 start_date = intnx("month",date,-2,"b");
 call symput("start_date",start_date);
 month_begin=intnx("month",date,0,"b");
@@ -32,12 +32,12 @@ last_month_end=intnx("month",date,0,"b")-1;
 call symput("last_month_end",last_month_end);
 last_month_begin=intnx("month",date,-1,"b");
 call symput("last_month_begin",last_month_begin);
-if day(date)>25 then do; fk_month_begin = mdy(month(date),26,year(date));*µ±ÔÂ26-ÏÂÔÂ25µÄÑ­»·;
+if day(date)>25 then do; fk_month_begin = mdy(month(date),26,year(date));*å½“æœˆ26-ä¸‹æœˆ25çš„å¾ªç¯;
 end_date = mdy(month(date)+1,25,year(date));end;
 else do;fk_month_begin = mdy(month(date)-1,26,year(date));
 end_date = mdy(month(date),25,year(date));end;
-/*¼ÓÁËÒ»¸ö12ÔÂµ×¸úĞÂµÄÒ»Äê1ÔÂ³õµÄÇé¿ö£¬²»È»ĞÂÄê»òÕßÔÂµ×»á³öÏÖ¿ÕÖµ*/
-if month(date)=12 and day(date)>25 then do; fk_month_begin = mdy(month(date),26,year(date));*µ±ÔÂ26-ÏÂÔÂ25µÄÑ­»·;
+/*åŠ äº†ä¸€ä¸ª12æœˆåº•è·Ÿæ–°çš„ä¸€å¹´1æœˆåˆçš„æƒ…å†µï¼Œä¸ç„¶æ–°å¹´æˆ–è€…æœˆåº•ä¼šå‡ºç°ç©ºå€¼*/
+if month(date)=12 and day(date)>25 then do; fk_month_begin = mdy(month(date),26,year(date));*å½“æœˆ26-ä¸‹æœˆ25çš„å¾ªç¯;
 end_date = mdy(month(date)-11,25,year(date)+1);end;
 else if month(date)=1 and day(date)<=25 then do;fk_month_begin = mdy(month(date)+11,26,year(date)-1);
 end_date = mdy(month(date),25,year(date));end;
@@ -53,7 +53,7 @@ format dt yymmdd10.;
 /* dt=mdy(9,30,2017);*/
 /* db=mdy(9,1,2017);*/
  nd = dt-db+60;
- *ndÀ­³¤ÊÇÎªÁËËãÁ÷Ê§·ÖÄ¸;
+ *ndæ‹‰é•¿æ˜¯ä¸ºäº†ç®—æµå¤±åˆ†æ¯;
 lastweekf=intnx('week',dt,-1);
 call symput("nd", nd);
 call symput("db",db);
@@ -65,8 +65,8 @@ run;
 data Ctl_task_assign;
 set csdata.Ctl_task_assign(keep=emp_id OVERDUE_LOAN_ID ASSIGN_TIME ASSIGN_EMP_ID status);
 /*if status^="-2";*/
-format ·ÖÅäÈÕÆÚ yymmdd10.;
-·ÖÅäÈÕÆÚ=datepart(ASSIGN_TIME);
+format åˆ†é…æ—¥æœŸ yymmdd10.;
+åˆ†é…æ—¥æœŸ=datepart(ASSIGN_TIME);
 run;
 
 data ca_staff;
@@ -80,23 +80,23 @@ left join ca_staff as b on a.emp_id=b.id1
 left join csdata.Ctl_loaninstallment as d on a.OVERDUE_LOAN_ID=d.id;
 quit;
 
-proc sort data=kanr;by contract_no ·ÖÅäÈÕÆÚ descending status;run;
+proc sort data=kanr;by contract_no åˆ†é…æ—¥æœŸ descending status;run;
 data kanr_;
 set kanr;
-format ÉÏÒ»¸ö·ÖÅäÈÕÆÚ yymmdd10.;
-ÉÏÒ»¸ö·ÖÅäÈÕÆÚ=lag(·ÖÅäÈÕÆÚ);
-by contract_no ·ÖÅäÈÕÆÚ descending status;
-if first.contract_no then do;ÉÏÒ»¸ö·ÖÅäÈÕÆÚ="";end;
+format ä¸Šä¸€ä¸ªåˆ†é…æ—¥æœŸ yymmdd10.;
+ä¸Šä¸€ä¸ªåˆ†é…æ—¥æœŸ=lag(åˆ†é…æ—¥æœŸ);
+by contract_no åˆ†é…æ—¥æœŸ descending status;
+if first.contract_no then do;ä¸Šä¸€ä¸ªåˆ†é…æ—¥æœŸ="";end;
 run;
 data kanr;
 set kanr_;
-if username not in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") and ÉÏÒ»¸ö·ÖÅäÈÕÆÚ=·ÖÅäÈÕÆÚ and status="-2" then delete;
+if username not in ("é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111")  and ä¸Šä¸€ä¸ªåˆ†é…æ—¥æœŸ=åˆ†é…æ—¥æœŸ and status="-2" then delete;
 if ASSIGN_EMP_ID^="CS_SYS";
 run;
 
 data kanr_;
 set kanr;
-if username not in ('ºÎ½¨Î°','ÁÖÊçÆ¼','ÕÅÓñÆ¼');
+if username not in ('ä½•å»ºä¼Ÿ','æ—æ·‘è','å¼ ç‰è');
 if kindex(contract_no,"C");
 run;
 
@@ -109,7 +109,7 @@ cut_dt = intnx("day", &db., &i.);
 call symput("cut_dt", cut_dt);
 run;
 data macro;
-set kanr_(where=(·ÖÅäÈÕÆÚ<=&cut_dt.));
+set kanr_(where=(åˆ†é…æ—¥æœŸ<=&cut_dt.));
 format cut_date yymmdd10.;
 cut_date=&cut_dt.;
 run;
@@ -120,41 +120,87 @@ proc append data=macro base=assignment;run;
 %mend;
 %get_payment;
 proc sort data=assignment;by contract_no cut_date;run;
+
 data cd.assignment;
 set assignment;
 run;
-data assignment;
-set cd.assignment;
-/*if contract_no in ('C151540474038803000002803','C152420717831703000000163','C152880258869303000000943','C152886448582203000001121','C153959059889403000000112','C154051732322903000000393','C154519924103203000000624','C2016040813524772791580','C2016041917145792051552','C2017072017015513426199','C2017082214165506075235','C2017082513430833201030','C2017091118162572452473','C2017091517345523906292','C2017092610572829147242','C2017101918084929769159','C2017112014415896422549','C2017122010564324395929','C2017122217383694791945','C2018042017262518501269','C2018051415033324144130','',''*/
-/*) then userName="ÆäËû";*/
-run;
 
-***************payment_dailyºÍpayment_daily_ntĞŞ¸Ä******************;
+*æˆéƒ½Våˆ†è¡Œå‰”é™¤æ˜ç»†;
 data repayfin.payment_daily;
 set repayfin.payment_daily;
-run;
+if contract_no="C2017082215330882762031" and cut_date=mdy(05,28,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C152707489842302300000028" and cut_date=mdy(04,30,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
 
+if contract_no="C2017092218030277297782" and cut_date=mdy(05,14,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+
+if contract_no="C152695711574103000001492" and cut_date=mdy(05,28,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017061613312880918847" and cut_date=mdy(05,22,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017062015444274576521" and cut_date=mdy(05,26,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017071914360094515002" and cut_date=mdy(05,26,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017101609561060204180" and cut_date=mdy(05,20,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017101614480047815595" and cut_date=mdy(05,01,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2018041610570575358936" and cut_date=mdy(05,27,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+*******;
+if contract_no="C2017072613194002808112" and cut_date=mdy(06,01,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C151451316038603000001871" and cut_date=mdy(06,03,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+if contract_no="C2018020116463328259218" and cut_date=mdy(06,08,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C152523930887803000001310" and cut_date=mdy(06,08,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017110411172360640132" and cut_date=mdy(06,09,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+
+if contract_no="C2016051116201495311550" and cut_date=mdy(06,01,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+if contract_no="C2018010315215300009612" and cut_date=mdy(06,04,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+
+if contract_no="C2017122218332782283924" and cut_date=mdy(06,10,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+if contract_no="C2018070614030230281756" and cut_date=mdy(06,11,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+run;
 
 data repayfin.payment_daily_nt;
 set repayfin.payment_daily_nt;
+if contract_no="C2017082215330882762031" and cut_date=mdy(05,28,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C152707489842302300000028" and cut_date=mdy(04,30,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+if contract_no="C2017092218030277297782" and cut_date=mdy(05,14,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+
+if contract_no="C152695711574103000001492" and cut_date=mdy(05,28,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017061613312880918847" and cut_date=mdy(05,22,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017062015444274576521" and cut_date=mdy(05,26,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017071914360094515002" and cut_date=mdy(05,26,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017101609561060204180" and cut_date=mdy(05,20,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2017101614480047815595" and cut_date=mdy(05,01,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C2018041610570575358936" and cut_date=mdy(05,27,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+*******;
+if contract_no="C2017072613194002808112" and cut_date=mdy(06,01,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C151451316038603000001871" and cut_date=mdy(06,03,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+if contract_no="C2018020116463328259218" and cut_date=mdy(06,08,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+if contract_no="C152523930887803000001310" and cut_date=mdy(06,08,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+if contract_no="C2017110411172360640132" and cut_date=mdy(06,09,2019) then è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;
+
+
+if contract_no="C2016051116201495311550" and cut_date=mdy(06,01,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+if contract_no="C2018010315215300009612" and cut_date=mdy(06,04,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+
+if contract_no="C2017122218332782283924" and cut_date=mdy(06,10,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+if contract_no="C2018070614030230281756" and cut_date=mdy(06,11,2019) then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;
+
+
 run;
-
-
 
 
 proc sql;
 create table assignment1 as
-select a.*,b.userName as Á÷Ê§¸ú½øÈËÔ±,b.·ÖÅäÈÕÆÚ as Á÷Ê§·ÖÅäÈÕÆÚ,c.userName as cut_date¸ú½øÈËÔ±,c.·ÖÅäÈÕÆÚ as cut_date·ÖÅäÈÕÆÚ,
-d.userName as vÁ÷Ê§¸ú½øÈËÔ±,d.·ÖÅäÈÕÆÚ as vÁ÷Ê§·ÖÅäÈÕÆÚ,
-e.userName as eÁ÷Ê§¸ú½øÈËÔ±,e.·ÖÅäÈÕÆÚ as eÁ÷Ê§·ÖÅäÈÕÆÚ
-from repayfin.payment_daily(where=(ÓªÒµ²¿^="APP" )) as a
+select a.*,b.userName as æµå¤±è·Ÿè¿›äººå‘˜,b.åˆ†é…æ—¥æœŸ as æµå¤±åˆ†é…æ—¥æœŸ,c.userName as cut_dateè·Ÿè¿›äººå‘˜,c.åˆ†é…æ—¥æœŸ as cut_dateåˆ†é…æ—¥æœŸ
+from repayfin.payment_daily(where=(è¥ä¸šéƒ¨^="APP" )) as a
 left join assignment as b on a.contract_no=b.contract_no and a.repay_date=b.cut_date
-left join assignment as c on a.contract_no=c.contract_no and a.cut_date=c.cut_date
-left join assignment as d on a.contract_no=d.contract_no and a.cut_date=d.cut_date+1
-left join assignment as e on a.contract_no=e.contract_no and a.cut_date=e.cut_date-15;
+left join assignment as c on a.contract_no=c.contract_no and a.cut_date=c.cut_date;
 quit;
 
-*********************¡ª¡ªÈ¥³ı»¬ÂäÃûµ¥¡ª¡ª********************;
+*********************â€”â€”å»é™¤æ»‘è½åå•â€”â€”********************;
 proc sql;
 create table apple as 
 select a.*,b.CURR_PERIOD from assignment1 as a
@@ -167,196 +213,119 @@ create table apple1 as
 select a.*,b.clear_date as l_clear_date  from apple as a
 left join account.bill_main as b on a.contract_no=b.contract_no and a.CURR_PERIOD-1=b.CURR_PERIOD;
 quit;
-*ÕâÀïÖØ¸´¼¸ºõÊÇ»µÕËÌí¼ÓÁËĞÂµÄÒ»Ìõ,ËùÒÔ´Ö±©µÄÈ¥ÖØ;
+*è¿™é‡Œé‡å¤å‡ ä¹æ˜¯åè´¦æ·»åŠ äº†æ–°çš„ä¸€æ¡,æ‰€ä»¥ç²—æš´çš„å»é‡;
 proc sort data=apple1 nodupkey;by contract_no cut_date;run;
 data assignment1;
 set apple1;
-if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1 and repay_date<=l_clear_date then do;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=.;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=.;end;
+if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=1 and repay_date<=l_clear_date then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=.;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=.;end;
 
-if kindex(ÓªÒµ²¿,"Òø´¨") and cut_date<mdy(04,03,2019) then do;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=0;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;end;*Òø´¨ÊÇ18ºÅ½ÓÊÖµÄ£¬Á÷Ê§Êı¾İÔÚ4ÔÂ3ÈÕ²úÉú-5ÔÂÉ¾³ı;
-if (kindex(ÓªÒµ²¿,"·ğÉ½") or kindex(ÓªÒµ²¿,"¸£ÖİÎåËÄ") or kindex(ÓªÒµ²¿,"ÏÃÃÅ") or kindex(ÓªÒµ²¿,"Õ¿½­")) and cut_date<mdy(03,22,2019) then do;
-»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=0;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;end;
+*æµå…¥æ•°æ®è®¡ç®—;
+if kindex(è¥ä¸šéƒ¨,"æ˜†æ˜") and cut_date<mdy(05,10,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ç›åŸ") and cut_date<mdy(06,01,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ä¼ŠçŠ") and cut_date<mdy(06,04,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"è´µé˜³") and cut_date<mdy(06,05,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åº“å°”å‹’") and cut_date<mdy(06,06,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åˆè‚¥") and cut_date<mdy(06,11,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+
+*æµå¤±æ•°æ®å¼€å§‹è®¡ç®—æ—¶é—´è¦å»¶å16å¤©;
+if kindex(è¥ä¸šéƒ¨,"æ˜†æ˜") and cut_date<mdy(05,26,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ç›åŸ") and cut_date<mdy(06,17,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ä¼ŠçŠ") and cut_date<mdy(06,20,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"è´µé˜³") and cut_date<mdy(06,21,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åº“å°”å‹’") and cut_date<mdy(06,22,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åˆè‚¥") and cut_date<mdy(06,27,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
 
 run;
-*********************¡ª¡ªÈ¥³ı»¬ÂäÃûµ¥¡ª¡ª********************;
+*********************â€”â€”å»é™¤æ»‘è½åå•â€”â€”********************;
 
 
-*¸ú½øÈËÔ±Îª¿ÕÊÇ¸Õ·Å¿îµÄ£¬Ã»ÓĞ·ÖÅä¸ú½øÈËÔ±;
+*ã€è·Ÿè¿›äººå‘˜ä¸ºç©ºæ˜¯åˆšæ”¾æ¬¾çš„ï¼Œæ²¡æœ‰åˆ†é…è·Ÿè¿›äººå‘˜ã€‘;
 data aa;
 set assignment1;
-if ¸ú½øÈËÔ±="" and cut_date<&month_begin.;
+if è·Ÿè¿›äººå‘˜="" and cut_date<&month_begin.;
 run;
-*ÒòÎªÕâ¼¸¸öÈËÖ»¹Ü³à·å¡¢Ö£Öİ¡¢ËÕÖİ¡¢»³»¯¡¢½­ÃÅ¡¢ÉîÛÚ¡¢ºìºÓ£¬ÆäËûµÄÊÇÕâ¼¸¸öÈËÖ®Ç°¹ÜµÄÓªÒµ²¿²»¹éÈëÕâĞ©ÈËµÄÁ÷ÈëÁ÷Ê§ÖĞ;
+
+*å› ä¸ºè¿™å‡ ä¸ªäººåªç®¡èµ¤å³°ã€éƒ‘å·ã€è‹å·ã€æ€€åŒ–ã€æ±Ÿé—¨ã€æ·±åœ³ã€çº¢æ²³ã€é‡åº†ã€å—äº¬ã€å—é€šï¼Œå…¶ä»–çš„æ˜¯è¿™å‡ ä¸ªäººä¹‹å‰ç®¡çš„è¥ä¸šéƒ¨ä¸å½’å…¥è¿™äº›äººçš„æµå…¥æµå¤±ä¸­;
 data assignment2;
 set assignment1;
 if  cut_date^=&last_month_end.;
-if  cut_date¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") then  cut_date¸ú½øÈËÔ±="_ÆäËû";
-if  Á÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à") then  Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if  vÁ÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à") then  vÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if  eÁ÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") then  eÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
+if  cut_dateè·Ÿè¿›äººå‘˜ not in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+							"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") then  cut_dateè·Ÿè¿›äººå‘˜="_å…¶ä»–";
+if  æµå¤±è·Ÿè¿›äººå‘˜ not in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+						"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") then  æµå¤±è·Ÿè¿›äººå‘˜="_å…¶ä»–";
 
-if  kindex(ÓªÒµ²¿,"³à·å") or kindex(ÓªÒµ²¿,"Ö£Öİ") or kindex(ÓªÒµ²¿,"ËÕÖİ") or kindex(ÓªÒµ²¿,"»³»¯") or kindex(ÓªÒµ²¿,"½­ÃÅ") or  kindex(ÓªÒµ²¿,"ÉîÛÚ")
- or kindex(ÓªÒµ²¿,"ºìºÓ") or kindex(ÓªÒµ²¿,"ÄÏÍ¨") or kindex(ÓªÒµ²¿,"ÄÏ¾©") or kindex(ÓªÒµ²¿,"ÖØÇì") then ·ûºÏ·¶Î§="11¼ÒÒÑ¹ØÃÅµê";
-else if kindex(ÓªÒµ²¿,"·ğÉ½") or kindex(ÓªÒµ²¿,"¸£ÖİÎåËÄ") or kindex(ÓªÒµ²¿,"ÏÃÃÅ") or kindex(ÓªÒµ²¿,"Õ¿½­") or kindex(ÓªÒµ²¿,"Òø´¨") then ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê";
+if  kindex(è¥ä¸šéƒ¨,"èµ¤å³°") or kindex(è¥ä¸šéƒ¨,"éƒ‘å·") or kindex(è¥ä¸šéƒ¨,"è‹å·") or kindex(è¥ä¸šéƒ¨,"æ€€åŒ–") or kindex(è¥ä¸šéƒ¨,"æ±Ÿé—¨") or  kindex(è¥ä¸šéƒ¨,"æ·±åœ³")
+ or kindex(è¥ä¸šéƒ¨,"çº¢æ²³") or kindex(è¥ä¸šéƒ¨,"å—é€š") or kindex(è¥ä¸šéƒ¨,"å—äº¬") or kindex(è¥ä¸šéƒ¨,"é‡åº†") or kindex(è¥ä¸šéƒ¨,"æ˜†æ˜") then ç¬¦åˆèŒƒå›´="11å®¶å·²å…³é—¨åº—";
+else if kindex(è¥ä¸šéƒ¨,"ä½›å±±") or kindex(è¥ä¸šéƒ¨,"ç¦å·äº”å››") or kindex(è¥ä¸šéƒ¨,"å¦é—¨") or kindex(è¥ä¸šéƒ¨,"æ¹›æ±Ÿ") or kindex(è¥ä¸šéƒ¨,"é“¶å·") or kindex(è¥ä¸šéƒ¨,"ç›åŸ")
+ or kindex(è¥ä¸šéƒ¨,"ä¼ŠçŠ") or kindex(è¥ä¸šéƒ¨,"è´µé˜³") or kindex(è¥ä¸šéƒ¨,"åº“å°”å‹’") or kindex(è¥ä¸šéƒ¨,"åˆè‚¥") then ç¬¦åˆèŒƒå›´="5å®¶å·²å…³é—¨åº—";
 
-if cut_date¸ú½øÈËÔ±  in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") and ·ûºÏ·¶Î§="" then cut_date¸ú½øÈËÔ±="_ÆäËû";
-if Á÷Ê§¸ú½øÈËÔ±  in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à") and ·ûºÏ·¶Î§="" then Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if vÁ÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à") and ·ûºÏ·¶Î§="" then  vÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if eÁ÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") and ·ûºÏ·¶Î§="" then  eÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-
-if ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±="_ÆäËû" and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1 then Á÷Ê§¸ú½øÈËÔ±=vÁ÷Ê§¸ú½øÈËÔ±;
-if ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±="_ÆäËû" and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=1 then Á÷Ê§¸ú½øÈËÔ±=vÁ÷Ê§¸ú½øÈËÔ±;
-if ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±="_ÆäËû" and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=1 then Á÷Ê§¸ú½øÈËÔ±=eÁ÷Ê§¸ú½øÈËÔ±;
-
-if Á÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")  then Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if Á÷Ê§¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") then V¿Û¿îÊı=1;
-	else V¿Û¿îÊı=0;
-if Á÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à") and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" then Á÷Èë³É¶¼=1;
-	else Á÷Èë³É¶¼=0;
-
-if cut_date<mdy(03,22,2019) and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1 and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;*ÌŞ³ıV·ÖĞĞ3ÔÂ22ºÅÖ®Ç°µÄÁ÷Ê§;
-
-
-if cut_date<mdy(03,22,2019) and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" 
-and Á÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à") then Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";/*ÔÂ³õÉ¾³ı*/
+if cut_dateè·Ÿè¿›äººå‘˜ in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+						"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") and ç¬¦åˆèŒƒå›´="" then cut_dateè·Ÿè¿›äººå‘˜="_å…¶ä»–";
+if æµå¤±è·Ÿè¿›äººå‘˜ in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+					"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") and ç¬¦åˆèŒƒå›´="" then æµå¤±è·Ÿè¿›äººå‘˜="_å…¶ä»–";
 run;
 
-*************************11ÓªÒµ²¿+4ÓªÒµ²¿******************************;
-data branch_chengdu;
-input BRANCH_NAME $45.;
-cards;
-³à·åÊĞµÚÒ»ÓªÒµ²¿
-ºìºÓÊĞµÚÒ»ÓªÒµ²¿
-»³»¯ÊĞµÚÒ»ÓªÒµ²¿
-½­ÃÅÊĞÒµÎñÖĞĞÄ
-ÄÏ¾©ÊĞµÚÒ»ÓªÒµ²¿
-ÄÏ¾©ÊĞÒµÎñÖĞĞÄ
-ÄÏÍ¨ÊĞÒµÎñÖĞĞÄ
-ÉîÛÚÊĞµÚÒ»ÓªÒµ²¿
-ËÕÖİÊĞµÚÒ»ÓªÒµ²¿
-Ö£ÖİÊĞµÚÒ»ÓªÒµ²¿
-ÖØÇìÊĞµÚÒ»ÓªÒµ²¿
-·ğÉ½ÊĞµÚÒ»ÓªÒµ²¿
-¸£ÖİÎåËÄÂ·ÓªÒµ²¿
-ÏÃÃÅÊĞµÚÒ»ÓªÒµ²¿
-Õ¿½­ÊĞµÚÒ»ÓªÒµ²¿
-Òø´¨ÊĞµÚÒ»ÓªÒµ²¿
-;
+*ã€æå‰ç»“æ¸…å®¢æˆ·ï¼Œä½†å·²ç»åˆ†é…åˆ°Våˆ†è¡Œæ‰‹ä¸­ã€‘;
+data assignment2;
+set assignment2;
+if ç¬¦åˆèŒƒå›´="5å®¶å·²å…³é—¨åº—" and cut_date=es_date and cut_dateåˆ†é…æ—¥æœŸ>=&db. then è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=1;
+if -15<=repay_date-clear_date<=10 and repay_date+16=cut_date and è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯^=1 then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=1;
+
 run;
-*************************11ÓªÒµ²¿+4ÓªÒµ²¿*******************************;
 
-
-
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
 proc sql;
 create table assignment3_1 as 
-select cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,
-sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ×òÈÕÓ¦»¹,
-sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬) as ×òÈÕÁ÷Èë,
-sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬)/sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ×òÈÕÁ÷ÈëÂÊ format percent7.2
+select cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,
+sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æ˜¨æ—¥åº”è¿˜,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ) as æ˜¨æ—¥æµå…¥,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æ˜¨æ—¥æµå…¥ç‡ format percent7.2
 from assignment2
 where cut_date=&dt.
-group by cut_date¸ú½øÈËÔ±;
+group by cut_dateè·Ÿè¿›äººå‘˜;
 quit;
 proc sql;
 create table assignment3_2 as 
-select Á÷Ê§¸ú½øÈËÔ±  as ¸ú½øÈËÔ±, sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ×òÈÕÁ÷Ê§
+select æµå¤±è·Ÿè¿›äººå‘˜  as è·Ÿè¿›äººå‘˜,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as æ˜¨æ—¥æµå¤±
 from assignment2
 where cut_date=&dt.
-group by Á÷Ê§¸ú½øÈËÔ±;
+group by æµå¤±è·Ÿè¿›äººå‘˜;
 quit;
 proc sql;
 create table assignment3 as 
 select a.*,b.*
 from assignment3_1 as a 
 left join assignment3_2 as b 
-on a.¸ú½øÈËÔ±=b.¸ú½øÈËÔ±;
+on a.è·Ÿè¿›äººå‘˜=b.è·Ÿè¿›äººå‘˜;
 quit;
 
 proc sql;
 create table assignment4_1 as 
-select cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,
-sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ±¾ÔÂÓ¦»¹,
-sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬) as ±¾ÔÂÁ÷Èë,
-sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬)/sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ±¾ÔÂÁ÷ÈëÂÊ format percent7.2
+select cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,
+sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æœ¬æœˆåº”è¿˜,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ) as æœ¬æœˆæµå…¥,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æœ¬æœˆæµå…¥ç‡ format percent7.2
 from assignment2
 where cut_date<=&dt.
-group by cut_date¸ú½øÈËÔ±;
-quit;
-
-
-*********************************×Ü¿Û¿îÊıÔö¼Ó¡ª¡ªV·ÖĞĞ¿Í·ş»¹¿îÕË»§*************************;
-proc sql;
-create table aa_vv1 as
-select Á÷Èë³É¶¼ as ¸¨ÖúÁĞ,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as Á÷Èë³É¶¼¿Í»§Êı from assignment2
-where mdy(03,22,2019)<=cut_date<=&dt. group by Á÷Èë³É¶¼;
+group by cut_dateè·Ÿè¿›äººå‘˜;
 quit;
 
 proc sql;
-create table aa_vv2 as
-select V¿Û¿îÊı as ¸¨ÖúÁĞ,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as V·ÖĞĞ¿Û¿îÊı from assignment2
-where mdy(03,22,2019)<=cut_date<=&dt. group by V¿Û¿îÊı;
-quit;
-
-data aa_vv;
-merge aa_vv1 aa_vv2;
-by ¸¨ÖúÁĞ;
-if ¸¨ÖúÁĞ=1;
-run;
-
-proc sql;
-create table aa_cd1 as 
-select Á÷Èë³É¶¼ as ¸¨ÖúÁĞ,Á÷Ê§¸ú½øÈËÔ± as ¸ú½øÈËÔ±,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as V¿Û¿îÊı
+create table assignment4_2 as 
+select æµå¤±è·Ÿè¿›äººå‘˜  as è·Ÿè¿›äººå‘˜,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as æœ¬æœˆæµå¤±,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æ€»æ‰£æ¬¾æ•°,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æµå¤±ç‡ format percent7.2
 from assignment2
-where mdy(03,22,2019)<=cut_date<=&dt. and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","_ÆäËû")
-group by ¸¨ÖúÁĞ,Á÷Ê§¸ú½øÈËÔ±;
+where cut_date<=&dt.
+group by æµå¤±è·Ÿè¿›äººå‘˜;
 quit;
-
-proc sql;
-create table aa_cd2(drop=¸¨ÖúÁĞ) as
-select a.*,b.* from aa_cd1 as a
-left join aa_vv as b on a.¸¨ÖúÁĞ=b.¸¨ÖúÁĞ;
-quit;
-proc sql;
-create table assignment4_2_ as 
-select Á÷Ê§¸ú½øÈËÔ±  as ¸ú½øÈËÔ±,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ±¾ÔÂÁ÷Ê§,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as cd¿Û¿îÊı from assignment2
-where cut_date<=&dt. group by Á÷Ê§¸ú½øÈËÔ±;
-quit;
-
-proc sql;
-create table assignment4_2 as
-select a.*,b.* from assignment4_2_ as a
-left join aa_cd2 as b on a.¸ú½øÈËÔ±=b.¸ú½øÈËÔ±;
-run;
-
-data assignment4_2_;
-set assignment4_2;
-array num _numeric_;
-do over num;
-if num=. then num=0;
-end;
-run;
-
-data assignment4_2;
-set assignment4_2_;
-format ×Ü¿Û¿îÊı 10. Á÷Ê§ÂÊ  percent7.2;
-if ¸ú½øÈËÔ±^="_ÆäËû" then do;
-×Ü¿Û¿îÊı=cd¿Û¿îÊı+V¿Û¿îÊı/Á÷Èë³É¶¼¿Í»§Êı*V·ÖĞĞ¿Û¿îÊı;
-Á÷Ê§ÂÊ=±¾ÔÂÁ÷Ê§/(cd¿Û¿îÊı+V¿Û¿îÊı/Á÷Èë³É¶¼¿Í»§Êı*V·ÖĞĞ¿Û¿îÊı);
-end;
-if ¸ú½øÈËÔ±="_ÆäËû" then do;×Ü¿Û¿îÊı=cd¿Û¿îÊı;Á÷Ê§ÂÊ=±¾ÔÂÁ÷Ê§/cd¿Û¿îÊı;end;
-
-drop cd¿Û¿îÊı V¿Û¿îÊı Á÷Èë³É¶¼¿Í»§Êı V·ÖĞĞ¿Û¿îÊı;
-run;
-
-*********************************×Ü¿Û¿îÊıÔö¼Ó¡ª¡ªV·ÖĞĞ¿Í·ş»¹¿îÕË»§*************************;
-
-
 proc sql;
 create table assignment4 as 
 select a.*,b.*
 from assignment4_1 as a 
-left join assignment4_2 as b on a.¸ú½øÈËÔ±=b.¸ú½øÈËÔ±;
+left join assignment4_2 as b 
+on a.è·Ÿè¿›äººå‘˜=b.è·Ÿè¿›äººå‘˜;
 quit;
 
 proc sql;
@@ -364,151 +333,88 @@ create table assignment5 as
 select a.*,b.*
 from assignment3 as a
 left join assignment4 as b
-on a.¸ú½øÈËÔ±=b.¸ú½øÈËÔ±;
+on a.è·Ÿè¿›äººå‘˜=b.è·Ÿè¿›äººå‘˜;
 quit;
 
 data assignment6;
-retain ¸ú½øÈËÔ± ×òÈÕÓ¦»¹ ×òÈÕÁ÷Èë ×òÈÕÁ÷ÈëÂÊ ±¾ÔÂÓ¦»¹ ±¾ÔÂÁ÷Èë ±¾ÔÂÁ÷ÈëÂÊ ×òÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§ ×Ü¿Û¿îÊı Á÷Ê§ÂÊ;
+retain è·Ÿè¿›äººå‘˜ æ˜¨æ—¥åº”è¿˜ æ˜¨æ—¥æµå…¥ æ˜¨æ—¥æµå…¥ç‡ æœ¬æœˆåº”è¿˜ æœ¬æœˆæµå…¥ æœ¬æœˆæµå…¥ç‡ æ˜¨æ—¥æµå¤± æœ¬æœˆæµå¤± æ€»æ‰£æ¬¾æ•° æµå¤±ç‡;
 set assignment5;
-run;
-
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
-proc sql;
-create table assignment3_1a as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ×òÈÕÓ¦»¹,sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬) as ×òÈÕÁ÷Èë,
-sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬)/sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ×òÈÕÁ÷ÈëÂÊ format percent7.2
-from assignment2
-where cut_date=&dt. and cut_date¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")
-group by ÓªÒµ²¿;
-quit;
-
-proc sql;
-create table assignment3_2a as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ×òÈÕÁ÷Ê§ from assignment2
-where cut_date=&dt. and Á÷Ê§¸ú½øÈËÔ±^="_ÆäËû"
-group by ÓªÒµ²¿;
-quit;
-proc sql;
-create table assignment4_1a as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ±¾ÔÂÓ¦»¹,sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬) as ±¾ÔÂÁ÷Èë,
-sum(»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬)/sum(»¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬) as ±¾ÔÂÁ÷ÈëÂÊ format percent7.2
-from assignment2
-where cut_date<=&dt. and cut_date¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")
-group by ÓªÒµ²¿;
-quit;
-
-**********************±¾ÔÂÁ÷Ê§·Ö×Ó·ÖÄ¸********************;
-proc sql;
-create table assignment4_2a1 as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ±¾ÔÂÁ÷Ê§
-from assignment2
-where mdy(03,22,2019)<=cut_date<=&nt. and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±^="_ÆäËû"
-group by ÓªÒµ²¿;
-quit;
-
-*ÓªÒµ²¿µÄ×Ü¿Û¿îÊı°üÀ¨ÁË¡¾³É¶¼¿Í·şºÍV·ÖĞĞ¡¿;
-proc sql;
-create table assignment4_2a2 as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as ×Ü¿Û¿îÊı
-from assignment2
-where mdy(03,22,2019)<=cut_date<=&nt. and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and cut_date¸ú½øÈËÔ±^="_ÆäËû"
-group by ÓªÒµ²¿;
-quit;
-data assignment4_2a;
-merge assignment4_2a1 assignment4_2a2;
-by ÓªÒµ²¿;
-format Á÷Ê§ÂÊ percent7.2;
-Á÷Ê§ÂÊ=±¾ÔÂÁ÷Ê§/×Ü¿Û¿îÊı;
-run;
-**********************±¾ÔÂÁ÷Ê§·Ö×Ó·ÖÄ¸********************;
-
-proc sql;
-create table assignment5a(drop=ÓªÒµ²¿) as
-select a.*,b.*,c.*,d.*,e.* from branch_chengdu as a
-left join assignment3_1a as b on a.BRANCH_NAME=b.ÓªÒµ²¿
-left join assignment3_2a as c on a.BRANCH_NAME=c.ÓªÒµ²¿
-left join assignment4_1a as d on a.BRANCH_NAME=d.ÓªÒµ²¿
-left join assignment4_2a as e on a.BRANCH_NAME=e.ÓªÒµ²¿;
-quit;
-
-data assignment6a;
-retain BRANCH_NAME ×òÈÕÓ¦»¹ ×òÈÕÁ÷Èë ×òÈÕÁ÷ÈëÂÊ ±¾ÔÂÓ¦»¹ ±¾ÔÂÁ÷Èë ±¾ÔÂÁ÷ÈëÂÊ ×òÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§ ×Ü¿Û¿îÊı Á÷Ê§ÂÊ;
-set assignment5a;
-rename BRANCH_NAME=ÓªÒµ²¿;
 run;
 
 
 data assignment2_1;
 set assignment2(where=(cut_date=&dt.));
-if »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬=1;
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû cut_date¸ú½øÈËÔ±;
+if è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=1;
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å cut_dateè·Ÿè¿›äººå‘˜;
 run;
+
 
 data assignment2_2;
 set assignment2(where=(cut_date=&dt.));
-if »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=1;
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû cut_date¸ú½øÈËÔ± cut_Date;
-rename cut_Date=Á÷ÈëÈÕÆÚ;
+if è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=1;
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å cut_dateè·Ÿè¿›äººå‘˜ cut_Date;
+rename cut_Date=æµå…¥æ—¥æœŸ;
 run;
+
 
 data assignment2_3;
 set assignment2(where=(cut_date=&dt.));
-if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1;
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû Á÷Ê§¸ú½øÈËÔ± cut_Date;
-rename cut_Date=Á÷Ê§ÈÕÆÚ;
+if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=1;
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å æµå¤±è·Ÿè¿›äººå‘˜ cut_Date;
+rename cut_Date=æµå¤±æ—¥æœŸ;
 run;
+
 
 data assignment2_4;
 set assignment2;
-if »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬=1;
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû cut_date¸ú½øÈËÔ±;
+if è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=1;
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å cut_dateè·Ÿè¿›äººå‘˜;
 run;
+
 
 data assignment2_5;
 set assignment2;
-if »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=1;
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû cut_date¸ú½øÈËÔ± cut_Date;
-rename cut_Date=Á÷ÈëÈÕÆÚ;
+if è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=1;
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å cut_dateè·Ÿè¿›äººå‘˜ cut_Date;
+rename cut_Date=æµå…¥æ—¥æœŸ;
 run;
 
-/**ÔÂ³õÓÃ;*/
+
+/**æœˆåˆç”¨;*/
 /*data assignment2_6;*/
 /*set assignment2;*/
-/*if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1;*/
-/*keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû Á÷Ê§¸ú½øÈËÔ± repay_date cut_Date;*/
-/*rename cut_Date=Á÷Ê§ÈÕÆÚ;*/
+/*if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=1;*/
+/*keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å æµå¤±è·Ÿè¿›äººå‘˜ repay_date cut_Date;*/
+/*rename cut_Date=æµå¤±æ—¥æœŸ;*/
 /*run;*/
 /**/
 /*PROC EXPORT DATA=assignment2_6*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="ÉÏÔÂÁ÷Ê§Ã÷Ï¸"; RUN;*/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="ä¸Šæœˆæµå¤±æ˜ç»†"; RUN;*/
 /**/
 /*data assignment2_7;*/
 /*set assignment2;*/
-/*if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=1 ; */
-/*keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû Á÷Ê§¸ú½øÈËÔ± repay_date ;*/
+/*if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=1 ; */
+/*keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å æµå¤±è·Ÿè¿›äººå‘˜ repay_date ;*/
 /*run;*/
 /*proc sort data=assignment2_7;by repay_date;run;*/
 /**/
 /*PROC EXPORT DATA=assignment2_7*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="ÉÏÔÂ×Ü¿Û¿îÊıÃ÷Ï¸"; RUN;*/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="ä¸Šæœˆæ€»æ‰£æ¬¾æ•°æ˜ç»†"; RUN;*/
 
 
-/*filename DD DDE "EXCEL|[³É¶¼´ßÊÕ±¨±í.xlsx]Sheet1!r4c1:r11c11";*/
-/*data _null_;set assignment6;file DD;put ¸ú½øÈËÔ± ×òÈÕÓ¦»¹ ×òÈÕÁ÷Èë ×òÈÕÁ÷ÈëÂÊ ±¾ÔÂÓ¦»¹ ±¾ÔÂÁ÷Èë ±¾ÔÂÁ÷ÈëÂÊ ×òÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§ ×Ü¿Û¿îÊı Á÷Ê§ÂÊ ;run;*/
+/*filename DD DDE "EXCEL|[æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx]Sheet1!r4c1:r11c11";*/
+/*data _null_;set assignment6;file DD;put è·Ÿè¿›äººå‘˜ æ˜¨æ—¥åº”è¿˜ æ˜¨æ—¥æµå…¥ æ˜¨æ—¥æµå…¥ç‡ æœ¬æœˆåº”è¿˜ æœ¬æœˆæµå…¥ æœ¬æœˆæµå…¥ç‡ æ˜¨æ—¥æµå¤± æœ¬æœˆæµå¤± æ€»æ‰£æ¬¾æ•° æµå¤±ç‡ ;run;*/
 
 proc sql;
 create table assignment1_nt as
-select a.*,b.userName as Á÷Ê§¸ú½øÈËÔ±,b.·ÖÅäÈÕÆÚ as Á÷Ê§·ÖÅäÈÕÆÚ,c.userName as cut_date¸ú½øÈËÔ±,c.·ÖÅäÈÕÆÚ as cut_date·ÖÅäÈÕÆÚ,
-d.userName as vÁ÷Ê§¸ú½øÈËÔ±,d.·ÖÅäÈÕÆÚ as vÁ÷Ê§·ÖÅäÈÕÆÚ,
-e.userName as eÁ÷Ê§¸ú½øÈËÔ±,e.·ÖÅäÈÕÆÚ as eÁ÷Ê§·ÖÅäÈÕÆÚ
-from repayfin.payment_daily_nt(where=(ÓªÒµ²¿^="APP" )) as a
+select a.*,b.userName as æµå¤±è·Ÿè¿›äººå‘˜,b.åˆ†é…æ—¥æœŸ as æµå¤±åˆ†é…æ—¥æœŸ,c.userName as cut_dateè·Ÿè¿›äººå‘˜,c.åˆ†é…æ—¥æœŸ as cut_dateåˆ†é…æ—¥æœŸ
+
+from repayfin.payment_daily_nt(where=(è¥ä¸šéƒ¨^="APP" )) as a
 left join assignment as b on a.contract_no=b.contract_no and a.repay_date=b.cut_date
-left join assignment as c on a.contract_no=c.contract_no and a.cut_date=c.cut_date
-left join assignment as d on a.contract_no=d.contract_no and a.cut_date=d.cut_date+1
-left join assignment as e on a.contract_no=e.contract_no and a.cut_date=e.cut_date-15;
+left join assignment as c on a.contract_no=c.contract_no and a.cut_date=c.cut_date;
 quit;
 
-*******È¥³ı»¬ÂäÃûµ¥**********;
+*******å»é™¤æ»‘è½åå•**********;
 
 proc sql;
 create table apple_nt as 
@@ -522,94 +428,92 @@ create table apple_nt1 as
 select a.*,b.clear_date as l_clear_date  from apple_nt as a
 left join account.bill_main as b on a.contract_no=b.contract_no and a.CURR_PERIOD-1=b.CURR_PERIOD;
 quit;
-*ÕâÀïÖØ¸´¼¸ºõÊÇ»µÕËÌí¼ÓÁËĞÂµÄÒ»Ìõ,ËùÒÔ´Ö±©µÄÈ¥ÖØ;
+*è¿™é‡Œé‡å¤å‡ ä¹æ˜¯åè´¦æ·»åŠ äº†æ–°çš„ä¸€æ¡,æ‰€ä»¥ç²—æš´çš„å»é‡;
 proc sort data=apple_nt1 nodupkey;by contract_no cut_date;run;
 data assignment1_nt;
 set apple_nt1;
-if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1 and repay_date<=l_clear_date then do;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=.;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=.;end;
+if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=1 and repay_date<=l_clear_date then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=.;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=.;end;
 
-if kindex(ÓªÒµ²¿,"Òø´¨") and cut_date<mdy(04,03,2019) then do;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=0;»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;end;*Òø´¨ÊÇ18ºÅ½ÓÊÖµÄ£¬Á÷Ê§Êı¾İÔÚ4ÔÂ3ÈÕ²úÉú-5ÔÂÉ¾³ı;
+*æµå…¥æ•°æ®è®¡ç®—æŒ‰æ¥æ‰‹æ—¶é—´è®¡ç®—;
+if kindex(è¥ä¸šéƒ¨,"æ˜†æ˜") and cut_date<mdy(05,10,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ç›åŸ") and cut_date<mdy(06,01,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ä¼ŠçŠ") and cut_date<mdy(06,04,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"è´µé˜³") and cut_date<mdy(06,05,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åº“å°”å‹’") and cut_date<mdy(06,06,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åˆè‚¥") and cut_date<mdy(06,11,2019) then do;è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ=0;è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=0;end;
+
+*æµå¤±æ•°æ®å¼€å§‹è®¡ç®—æ—¶é—´è¦å»¶å16å¤©;
+if kindex(è¥ä¸šéƒ¨,"æ˜†æ˜") and cut_date<mdy(05,26,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ç›åŸ") and cut_date<mdy(06,17,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"ä¼ŠçŠ") and cut_date<mdy(06,20,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"è´µé˜³") and cut_date<mdy(06,21,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åº“å°”å‹’") and cut_date<mdy(06,22,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
+if kindex(è¥ä¸šéƒ¨,"åˆè‚¥") and cut_date<mdy(06,27,2019) then do;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=0;è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=0;end;
 
 run;
-data cd.assignment1_nt;
-set assignment1_nt;
-run;
-*******È¥³ı»¬ÂäÃûµ¥**********;
+*******å»é™¤æ»‘è½åå•**********;
 
-*ÒòÎªÕâ¼¸¸öÈËÖ»¹Ü³à·å¡¢Ö£Öİ¡¢ËÕÖİ¡¢»³»¯¡¢½­ÃÅ¡¢ÉîÛÚ¡¢ºìºÓ£¬ÆäËûµÄÊÇÕâ¼¸¸öÈËÖ®Ç°¹ÜµÄÓªÒµ²¿²»¹éÈëÕâĞ©ÈËµÄÁ÷ÈëÁ÷Ê§ÖĞ;
+*å› ä¸ºè¿™å‡ ä¸ªäººåªç®¡èµ¤å³°ã€éƒ‘å·ã€è‹å·ã€æ€€åŒ–ã€æ±Ÿé—¨ã€æ·±åœ³ã€çº¢æ²³ï¼Œå…¶ä»–çš„æ˜¯è¿™å‡ ä¸ªäººä¹‹å‰ç®¡çš„è¥ä¸šéƒ¨ä¸å½’å…¥è¿™äº›äººçš„æµå…¥æµå¤±ä¸­;
 data assignment2_nt;
 set assignment1_nt;
-if  cut_date^=&last_month_end.  ;
-if  cut_date¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") then  cut_date¸ú½øÈËÔ±="_ÆäËû";
-if  Á÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à") then  Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if  vÁ÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à") then  vÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if  eÁ÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") then  eÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
+if cut_date^=&last_month_end.;
+if cut_dateè·Ÿè¿›äººå‘˜ not in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+							"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") then  cut_dateè·Ÿè¿›äººå‘˜="_å…¶ä»–";
 
-if  kindex(ÓªÒµ²¿,"³à·å") or kindex(ÓªÒµ²¿,"Ö£Öİ") or kindex(ÓªÒµ²¿,"ËÕÖİ") or kindex(ÓªÒµ²¿,"»³»¯") or kindex(ÓªÒµ²¿,"½­ÃÅ") or  kindex(ÓªÒµ²¿,"ÉîÛÚ")
- or kindex(ÓªÒµ²¿,"ºìºÓ") or kindex(ÓªÒµ²¿,"ÄÏÍ¨") or kindex(ÓªÒµ²¿,"ÄÏ¾©") or kindex(ÓªÒµ²¿,"ÖØÇì") then ·ûºÏ·¶Î§="11¼ÒÒÑ¹ØÃÅµê";
-else if kindex(ÓªÒµ²¿,"·ğÉ½") or kindex(ÓªÒµ²¿,"¸£ÖİÎåËÄ") or kindex(ÓªÒµ²¿,"ÏÃÃÅ") or kindex(ÓªÒµ²¿,"Õ¿½­") or kindex(ÓªÒµ²¿,"Òø´¨") then ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê";
+if æµå¤±è·Ÿè¿›äººå‘˜ not in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+						"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") then æµå¤±è·Ÿè¿›äººå‘˜="_å…¶ä»–";
 
-if cut_date¸ú½øÈËÔ±  in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") and ·ûºÏ·¶Î§="" then cut_date¸ú½øÈËÔ±="_ÆäËû";
-if Á÷Ê§¸ú½øÈËÔ±  in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à") and ·ûºÏ·¶Î§="" then Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if vÁ÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à") and ·ûºÏ·¶Î§="" then  vÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if eÁ÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") and ·ûºÏ·¶Î§="" then  eÁ÷Ê§¸ú½øÈËÔ±="_ÆäËû";
+if kindex(è¥ä¸šéƒ¨,"èµ¤å³°") or kindex(è¥ä¸šéƒ¨,"éƒ‘å·") or kindex(è¥ä¸šéƒ¨,"è‹å·") or kindex(è¥ä¸šéƒ¨,"æ€€åŒ–") or kindex(è¥ä¸šéƒ¨,"æ±Ÿé—¨") or  kindex(è¥ä¸šéƒ¨,"æ·±åœ³")
+ or kindex(è¥ä¸šéƒ¨,"çº¢æ²³") or kindex(è¥ä¸šéƒ¨,"å—é€š") or kindex(è¥ä¸šéƒ¨,"å—äº¬") or kindex(è¥ä¸šéƒ¨,"é‡åº†") or kindex(è¥ä¸šéƒ¨,"æ˜†æ˜") then ç¬¦åˆèŒƒå›´="11å®¶å·²å…³é—¨åº—";
+else if kindex(è¥ä¸šéƒ¨,"ä½›å±±") or kindex(è¥ä¸šéƒ¨,"ç¦å·äº”å››") or kindex(è¥ä¸šéƒ¨,"å¦é—¨") or kindex(è¥ä¸šéƒ¨,"æ¹›æ±Ÿ") or kindex(è¥ä¸šéƒ¨,"é“¶å·") or kindex(è¥ä¸šéƒ¨,"ç›åŸ")
+ or kindex(è¥ä¸šéƒ¨,"ä¼ŠçŠ") or kindex(è¥ä¸šéƒ¨,"è´µé˜³") or kindex(è¥ä¸šéƒ¨,"åº“å°”å‹’") or kindex(è¥ä¸šéƒ¨,"åˆè‚¥") then ç¬¦åˆèŒƒå›´="5å®¶å·²å…³é—¨åº—";
 
-if ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±="_ÆäËû" and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1 then Á÷Ê§¸ú½øÈËÔ±=vÁ÷Ê§¸ú½øÈËÔ±;
-if ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±="_ÆäËû" and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=1 then Á÷Ê§¸ú½øÈËÔ±=vÁ÷Ê§¸ú½øÈËÔ±;
-if ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±="_ÆäËû" and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=1 then Á÷Ê§¸ú½øÈËÔ±=eÁ÷Ê§¸ú½øÈËÔ±;
+if cut_dateè·Ÿè¿›äººå‘˜ in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+						"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111")
+and ç¬¦åˆèŒƒå›´="" then cut_dateè·Ÿè¿›äººå‘˜="_å…¶ä»–";
 
-if Á÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")  then Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";
-if Á÷Ê§¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") then V¿Û¿îÊı=1;
-	else V¿Û¿îÊı=0;
-if Á÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","ÏÄ¶àÒË1111","Ô¬Ã÷Ã÷","¶¡½à") and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" then Á÷Èë³É¶¼=1;
-	else Á÷Èë³É¶¼=0;
+if æµå¤±è·Ÿè¿›äººå‘˜  in ("å´å¤å§£","æ˜“è¿è‹±","é«˜å®","è¢æ˜æ˜","ä¸æ´","é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","å¾èŒ‚æ€111",
+					"éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") and ç¬¦åˆèŒƒå›´="" then æµå¤±è·Ÿè¿›äººå‘˜="_å…¶ä»–";
+run;
 
-if cut_date<mdy(03,22,2019) and »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1 and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;*ÌŞ³ıV·ÖĞĞ3ÔÂ22ºÅÖ®Ç°µÄÁ÷Ê§;
-
-if cut_date<mdy(03,22,2019) and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" 
-and Á÷Ê§¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à") then Á÷Ê§¸ú½øÈËÔ±="_ÆäËû";/*ÔÂ³õÉ¾³ı*/
+data assignment2_nt;
+set assignment2_nt;
+if ç¬¦åˆèŒƒå›´="5å®¶å·²å…³é—¨åº—" and cut_date=es_date and cut_dateåˆ†é…æ—¥æœŸ>=&db. then è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=1;
+if -15<=repay_date-clear_date<=10 and repay_date+16=cut_date and è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯^=1 then è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=1;
 
 run;
 
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
+
 proc sql;
 create table nt_account as 
-select cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,count(*) as Ä¿Ç°ÕË»§Êı from assignment2_nt
+select 
+cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,
+count(*) as ç›®å‰è´¦æˆ·æ•°
+from assignment2_nt
 where cut_date=&nt.  and pre_1m_status not in('09_ES','11_Settled')
-group by cut_date¸ú½øÈËÔ±;
+group by cut_dateè·Ÿè¿›äººå‘˜;
 quit;
+
+
 proc sql;
 create table nt_daikou as 
-select cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,count(*) as µ±Ìì´ú¿Û×Ü¸öÊı from assignment2_nt
-where cut_date=&nt. and »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬=1
-group by cut_date¸ú½øÈËÔ±;
+select 
+cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,
+count(*) as å½“å¤©ä»£æ‰£æ€»ä¸ªæ•°
+from assignment2_nt
+where cut_date=&nt. and è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=1
+group by cut_dateè·Ÿè¿›äººå‘˜;
 quit;
-
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
-proc sql;
-create table nt_account_a as 
-select ÓªÒµ²¿,count(*) as Ä¿Ç°ÕË»§Êı from assignment2_nt
-where cut_date=&nt.  and pre_1m_status not in('09_ES','11_Settled') and cut_date¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")
-group by ÓªÒµ²¿;
-quit;
-proc sql;
-create table nt_daikou_a as 
-select ÓªÒµ²¿,count(*) as µ±Ìì´ú¿Û×Ü¸öÊı from assignment2_nt
-where cut_date=&nt. and »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬=1 and cut_date¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")
-group by ÓªÒµ²¿;
-quit;
-
 
 proc sql;
 create table nt_daikou_ as 
-select contract_no,¿Í»§ĞÕÃû,cut_date¸ú½øÈËÔ±,repay_date
+select contract_no, å®¢æˆ·å§“å,cut_dateè·Ÿè¿›äººå‘˜,repay_date
 from assignment2_nt
-where cut_date=&nt. and »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬=1;
+where cut_date=&nt. and è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=1;
 quit;
 
-
 data cc;
-set account.bill_main(where=(repay_date=&nt. and bill_status not in ("0000","0003")));*¡¾0000:ÒÑ¾­½áÇå£¬0001:Õı³£,0002:ÓâÆÚ£¬0003:ÌáÇ°½áÇå¡¿;
+set account.bill_main(where=(repay_date=&nt. and bill_status not in ("0000","0003")));
 run;
 proc sql;
 create table cc1 as
@@ -618,22 +522,22 @@ left join account.Bill_fee_dtl as b on a.contract_no=b.contract_no;
 quit;
 proc sql;
 create table cc2 as 
-select contract_no,sum(CURR_RECEIPT_AMT) as ÒÑ»¹±¾½ğÀûÏ¢ 
-from account.Bill_fee_dtl(where=(fee_name in ("±¾½ğ","ÀûÏ¢") and OFFSET_DATE=&nt. )) where contract_no in (select contract_no from cc1)
+select contract_no,sum(CURR_RECEIPT_AMT) as å·²è¿˜æœ¬é‡‘åˆ©æ¯ 
+from account.Bill_fee_dtl(where=(fee_name in ("æœ¬é‡‘","åˆ©æ¯") and OFFSET_DATE=&nt. )) where contract_no in (select contract_no from cc1)
 group by contract_no;quit;
 proc sql;
 create table cc3(where=(not od_days>0)) as
-select a.contract_no,a.repay_date,b.ÒÑ»¹±¾½ğÀûÏ¢,a.CURR_RECEIVE_AMT,c.ÓªÒµ²¿,d.od_days,d.×Ê½ğÇşµÀ  from cc as a
+select a.contract_no,a.repay_date,b.å·²è¿˜æœ¬é‡‘åˆ©æ¯,a.CURR_RECEIVE_AMT,c.è¥ä¸šéƒ¨,d.od_days,d.èµ„é‡‘æ¸ é“  from cc as a
 left join cc2 as b on a.contract_no=b.contract_no
 left join zq.Account_info as c on a.contract_no=c.contract_no 
 left join repayFin.payment_daily(where=(cut_date=&dt.)) as d on a.contract_no=d.contract_no ;
 quit;
 data cc3_1;
 set cc3;
-if CURR_RECEIVE_AMT>ÒÑ»¹±¾½ğÀûÏ¢ and sum(CURR_RECEIVE_AMT,-ÒÑ»¹±¾½ğÀûÏ¢)>1 and ÒÑ»¹±¾½ğÀûÏ¢<100;
-if ×Ê½ğÇşµÀ not in ("jsxj1");
+if CURR_RECEIVE_AMT>å·²è¿˜æœ¬é‡‘åˆ©æ¯ and sum(CURR_RECEIVE_AMT,-å·²è¿˜æœ¬é‡‘åˆ©æ¯)>1 and å·²è¿˜æœ¬é‡‘åˆ©æ¯<100;
+if èµ„é‡‘æ¸ é“ not in ("jsxj1");
 run;
-*½úÉÌ;
+*æ™‹å•†;
 data tttrepay_plan_js;
 set account.repay_plan_js;
 run;
@@ -647,7 +551,7 @@ if SETLPRCP=PSPRCPAMT and SETLNORMINT=PSNORMINTAMT then  clear_date_js=datepart(
 if repay_date_js<=mdy(10,25,2016) then clear_date_js=repay_date_js;
 run;
 
-data cc3_1_js;*±ØÓĞ;
+data cc3_1_js;*å¿…æœ‰;
 set tttrepay_plan_js;
 if repay_date_js=&nt.;
 if SETLPRCP^=PSPRCPAMT or SETLNORMINT^=PSNORMINTAMT;
@@ -657,228 +561,118 @@ run;
 
 data cc3_1;
 set cc3_1 cc3_1_js ;
-if ÓªÒµ²¿^="APP";
-if contract_no="C2018101613583597025048" then delete;/*ÌØÊâ¿Í»§É¾³ı*/
+if è¥ä¸šéƒ¨^="APP";
+if contract_no="C2018101613583597025048" then delete;/*ç‰¹æ®Šå®¢æˆ·åˆ é™¤*/
 run;
 proc sort data=cc3_1  nodupkey;by contract_no;run;
 
 proc sql;
 create table cc3_1_ as
-select a.*,b.cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,b.·ûºÏ·¶Î§,c.es
+select a.*,b.cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,c.es
 from  cc3_1 as a
 left join assignment2_nt as b on a.contract_no=b.contract_no and a.repay_date=b.cut_Date
-left join repayfin.payment_daily as c on a.contract_no=c.contract_no and a.repay_date=c.cut_Date;
+left join repayfin.payment_daily as c on a.contract_no=c.contract_no and a.repay_date=c.cut_Date
+;
 quit;
 
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
 proc sql;
 create table nt_daikou1 as
-select ¸ú½øÈËÔ±,count(*) from cc3_1_(where=(repay_date=&nt.))
+select è·Ÿè¿›äººå‘˜,
+count(*)
+from cc3_1_(where=(repay_date=&nt.))
 where es^=1
-group by ¸ú½øÈËÔ±;
+group by è·Ÿè¿›äººå‘˜;
 quit;
-
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
-proc sql;
-create table nt_daikou1a as
-select ÓªÒµ²¿,count(*) from cc3_1_(where=(repay_date=&nt.))
-where es^=1 and ¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")
-group by ÓªÒµ²¿;
-quit;
-
-
 proc sql;
 create table nt_daikou1_ as
-select contract_no,¸ú½øÈËÔ±,repay_date from cc3_1_(where=(repay_date=&nt.)) 
+select contract_no,è·Ÿè¿›äººå‘˜,repay_date
+from cc3_1_(where=(repay_date=&nt.)) 
 where es^=1;
 quit;
 
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
+
 proc sql;
 create table yuqi17 as 
-select cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,count(*) as yuqi17 from assignment2_nt
-where cut_date=&nt. and 1<=od_days<=7 and cut_date¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","_ÆäËû")
-group by ¸ú½øÈËÔ±;
+select cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,
+count(*) as yuqi17
+from assignment2_nt
+where cut_date=&nt. and 1<=od_days<=7
+group by è·Ÿè¿›äººå‘˜;
 quit;
 
 proc sql;
 create table yuqi815 as 
-select cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,count(*) as yuqi815 from assignment2_nt
-where cut_date=&nt. and 8<=od_days<=15 and cut_date¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","_ÆäËû")
-group by ¸ú½øÈËÔ±;
+select cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,
+count(*) as yuqi815
+from assignment2_nt
+where cut_date=&nt. and 8<=od_days<=15
+group by è·Ÿè¿›äººå‘˜;
 quit;
 
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
 proc sql;
-create table yuqi17a as 
-select ÓªÒµ²¿,count(*) as yuqi17 from assignment2_nt
-where cut_date=&nt. and 1<=od_days<=7 and cut_date¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","_ÆäËû")
-group by ÓªÒµ²¿;
-quit;
-proc sql;
-create table yuqi815a as 
-select ÓªÒµ²¿,count(*) as yuqi815 from assignment2_nt
-where cut_date=&nt. and 8<=od_days<=15 and cut_date¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","_ÆäËû")
-group by ÓªÒµ²¿;
+create table yuqi115_ as 
+select contract_no,å®¢æˆ·å§“å,cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,repay_date,od_days as é€¾æœŸå¤©æ•°
+from assignment2_nt
+where cut_date=&nt. and 1<=od_days<=15;
 quit;
 
-/*proc sql;*/
-/*create table yuqi115_ as */
-/*select contract_no,¿Í»§ĞÕÃû,cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,repay_date,od_days as ÓâÆÚÌìÊı*/
-/*from assignment2_nt*/
-/*where cut_date=&nt. and 1<=od_days<=15;*/
-/*quit;*/
-data yuqi115_;
-set assignment2_nt;
-if cut_date=&nt. and 1<=od_days<=15;
-if cut_date¸ú½øÈËÔ± not in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à","_ÆäËû") then cut_date¸ú½øÈËÔ±="_ÆäËû";
-keep contract_no ¿Í»§ĞÕÃû cut_date¸ú½øÈËÔ± repay_date od_days;
-rename cut_date¸ú½øÈËÔ±=¸ú½øÈËÔ± od_days=ÓâÆÚÌìÊı;
-run;
 
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
 proc sql;
 create table assignment4_2_a as 
-select Á÷Ê§¸ú½øÈËÔ±  as ¸ú½øÈËÔ±,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ½ñÈÕÁ÷Ê§
+select æµå¤±è·Ÿè¿›äººå‘˜  as è·Ÿè¿›äººå‘˜,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as ä»Šæ—¥æµå¤±
 from assignment2_nt
 where cut_date=&nt.
-group by Á÷Ê§¸ú½øÈËÔ±;
-quit;
-
-
-*********************************×Ü¿Û¿îÊıÔö¼Ó¡ª¡ªV·ÖĞĞ¿Í·ş»¹¿îÕË»§*************************;
-proc sql;
-create table aa_vv1_nt as
-select Á÷Èë³É¶¼ as ¸¨ÖúÁĞ,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as Á÷Èë³É¶¼¿Í»§Êı from assignment2_nt
-where mdy(03,22,2019)<=cut_date<=&nt. group by Á÷Èë³É¶¼;
+group by æµå¤±è·Ÿè¿›äººå‘˜;
 quit;
 
 proc sql;
-create table aa_vv2_nt as
-select V¿Û¿îÊı as ¸¨ÖúÁĞ,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as V·ÖĞĞ¿Û¿îÊı from assignment2_nt
-where mdy(03,22,2019)<=cut_date<=&nt. group by V¿Û¿îÊı;
-quit;
-
-data aa_vv_nt;
-merge aa_vv1_nt aa_vv2_nt;
-by ¸¨ÖúÁĞ;
-if ¸¨ÖúÁĞ=1;
-run;
-
-proc sql;
-create table aa_cd1_nt as 
-select Á÷Èë³É¶¼ as ¸¨ÖúÁĞ,Á÷Ê§¸ú½øÈËÔ± as ¸ú½øÈËÔ±,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as V¿Û¿îÊı
+create table assignment4_2_b as 
+select æµå¤±è·Ÿè¿›äººå‘˜  as è·Ÿè¿›äººå‘˜,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as æœ¬æœˆæµå¤±_nt,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æ€»æ‰£æ¬¾æ•°_nt,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æµå¤±ç‡_nt format percent7.2
 from assignment2_nt
-where mdy(03,22,2019)<=cut_date<=&nt. and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¸ßºê","Ô¬Ã÷Ã÷","¶¡½à")
-group by ¸¨ÖúÁĞ,Á÷Ê§¸ú½øÈËÔ±;
+where cut_date<=&nt.
+group by æµå¤±è·Ÿè¿›äººå‘˜;
 quit;
 
-proc sql;
-create table aa_cd2_nt(drop=¸¨ÖúÁĞ) as
-select a.*,b.* from aa_cd1_nt as a
-left join aa_vv_nt as b on a.¸¨ÖúÁĞ=b.¸¨ÖúÁĞ;
-quit;
-proc sql;
-create table assignment4_2_b_ as 
-select Á÷Ê§¸ú½øÈËÔ±  as ¸ú½øÈËÔ±,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ±¾ÔÂÁ÷Ê§_nt,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as cd¿Û¿îÊı from assignment2_nt
-where cut_date<=&nt. group by Á÷Ê§¸ú½øÈËÔ±;
-quit;
 
-proc sql;
-create table assignment4_2_b as
-select a.*,b.* from assignment4_2_b_ as a
-left join aa_cd2_nt as b on a.¸ú½øÈËÔ±=b.¸ú½øÈËÔ±;
-run;
-
-data assignment4_2_b_;
-set assignment4_2_b;
-array num _numeric_;
-do over num;
-if num=. then num=0;
-end;
-run;
-
-data assignment4_2_b;
-set assignment4_2_b_;
-
-if ¸ú½øÈËÔ±^="_ÆäËû" then do;
-×Ü¿Û¿îÊı_nt=round(cd¿Û¿îÊı+V¿Û¿îÊı/Á÷Èë³É¶¼¿Í»§Êı*V·ÖĞĞ¿Û¿îÊı,1);
-Á÷Ê§ÂÊ_nt=±¾ÔÂÁ÷Ê§_nt/(cd¿Û¿îÊı+V¿Û¿îÊı/Á÷Èë³É¶¼¿Í»§Êı*V·ÖĞĞ¿Û¿îÊı);end;
-
-if ¸ú½øÈËÔ±="_ÆäËû" then do;×Ü¿Û¿îÊı_nt=cd¿Û¿îÊı;Á÷Ê§ÂÊ_nt=±¾ÔÂÁ÷Ê§_nt/cd¿Û¿îÊı;end;
-
-drop cd¿Û¿îÊı V¿Û¿îÊı Á÷Èë³É¶¼¿Í»§Êı V·ÖĞĞ¿Û¿îÊı;
-run;
-
-*********************************×Ü¿Û¿îÊıÔö¼Ó¡ª¡ªV·ÖĞĞ¿Í·ş»¹¿îÕË»§*************************;
-
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
-proc sql;
-create table assignment4_2_aa as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ½ñÈÕÁ÷Ê§
-from assignment2_nt
-where cut_date=&nt. and Á÷Ê§¸ú½øÈËÔ±^="_ÆäËû" and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê"
-group by ÓªÒµ²¿;
-quit;
-
-**********************±¾ÔÂÁ÷Ê§·Ö×Ó·ÖÄ¸********************;
-proc sql;
-create table assignment4_2_bb1 as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as ±¾ÔÂÁ÷Ê§_nt
-from assignment2_nt
-where mdy(03,22,2019)<=cut_date<=&nt. and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and Á÷Ê§¸ú½øÈËÔ±^="_ÆäËû"
-group by ÓªÒµ²¿;
-quit;
-proc sql;
-create table assignment4_2_bb2 as 
-select ÓªÒµ²¿,sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as ×Ü¿Û¿îÊı_nt
-from assignment2_nt
-where mdy(03,22,2019)<=cut_date<=&nt. and ·ûºÏ·¶Î§="5¼ÒÒÑ¹ØÃÅµê" and cut_date¸ú½øÈËÔ±^="_ÆäËû"
-group by ÓªÒµ²¿;
-quit;
-data assignment4_2_bb;
-merge assignment4_2_bb1 assignment4_2_bb2;
-by ÓªÒµ²¿;
-format Á÷Ê§ÂÊ_nt percent7.2;
-Á÷Ê§ÂÊ_nt=±¾ÔÂÁ÷Ê§_nt/×Ü¿Û¿îÊı_nt;
-run;
-**********************±¾ÔÂÁ÷Ê§·Ö×Ó·ÖÄ¸********************;
-
-
-**********************±¾ÔÂÁ÷Ê§·Ö×Ó·ÖÄ¸********************;
 data assignment2_3;
 set assignment2_nt(where=(cut_date=&nt.));
-if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1;
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû Á÷Ê§¸ú½øÈËÔ± cut_Date;
-rename cut_Date=Á÷Ê§ÈÕÆÚ;
+if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=1;
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å æµå¤±è·Ÿè¿›äººå‘˜ cut_Date;
+rename cut_Date=æµå¤±æ—¥æœŸ;
 run;
 
 data assignment2_6;
 set assignment2_nt;
-if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=1;
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû Á÷Ê§¸ú½øÈËÔ± repay_date cut_Date;
-rename cut_Date=Á÷Ê§ÈÕÆÚ;
+if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ=1;
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å æµå¤±è·Ÿè¿›äººå‘˜ repay_date cut_Date;
+rename cut_Date=æµå¤±æ—¥æœŸ;
 run;
+
 
 data assignment2_7;
 set assignment2_nt;
-if »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=1 ; 
-keep contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû Á÷Ê§¸ú½øÈËÔ± repay_date ;
+if è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯=1 ; 
+keep contract_no è¥ä¸šéƒ¨ å®¢æˆ·å§“å æµå¤±è·Ÿè¿›äººå‘˜ repay_date ;
 run;
 proc sort data=assignment2_7;by repay_date;run;
+
+
 
 data test;
 set account.bill_main;
 if bill_status^="0003";
-if CLEAR_DATE>=&dt. or CLEAR_DATE="" ;*ÊÇÎªÁËÌŞ³ıĞ¡Óêµã½áÇåµÄ;
+if CLEAR_DATE>=&dt. or CLEAR_DATE="" ;*æ˜¯ä¸ºäº†å‰”é™¤å°é›¨ç‚¹ç»“æ¸…çš„;
 if &nt.+1<=repay_date<=&nt.+5;
 keep contract_no repay_date;
-if contract_no="C2018101613583597025048" then delete;/*ÌØÊâ¿Í»§É¾³ı*/
+if contract_no="C2018101613583597025048" then delete;/*ç‰¹æ®Šå®¢æˆ·åˆ é™¤*/
 run;
 proc sort data=test;by contract_no repay_date;run;
 proc sort data=test nodupkey;by contract_no;run;
-/**½úÉÌ;*/
+/**æ™‹å•†;*/
 data test_js;
 set repayfin.tttrepay_plan_js;
 if &nt.+1<=repay_date_js<=&nt.+5;
@@ -895,80 +689,65 @@ proc sort data=test_all nodupkey;by contract_no repay_date;run;
 
 proc sql;
 create table tjia as
-select a.*,b.cut_date¸ú½øÈËÔ± as ¸ú½øÈËÔ±,b.¿Í»§ĞÕÃû,b.·ûºÏ·¶Î§,b.ÓªÒµ²¿
+select a.*,b.cut_dateè·Ÿè¿›äººå‘˜ as è·Ÿè¿›äººå‘˜,b.å®¢æˆ·å§“å,b.è¥ä¸šéƒ¨
 from test_all as a 
 left join assignment2_nt(where=(cut_Date=&nt.)) as b 
 on a.contract_no=b.contract_no;
 quit;
 
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
+
 proc sql;
 create table Tjia5 as 
-select ¸ú½øÈËÔ±,count(*) as T5 from tjia
-group by ¸ú½øÈËÔ±;
-quit;
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
-proc sql;
-create table Tjia5a as 
-select ÓªÒµ²¿,count(*) as T5 from tjia
-where ¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111")
-group by ÓªÒµ²¿;
+select è·Ÿè¿›äººå‘˜,
+count(*) as T5
+from tjia
+group by è·Ÿè¿›äººå‘˜;
 quit;
 
 proc sql;
 create table Tjia5_ as 
-select contract_no,¿Í»§ĞÕÃû,¸ú½øÈËÔ±,repay_Date
+select contract_no,å®¢æˆ·å§“å,è·Ÿè¿›äººå‘˜,repay_Date
 from tjia;
 quit;
 
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
-proc sort data=yuqi17;by ¸ú½øÈËÔ±;run;
-proc sort data=yuqi815;by ¸ú½øÈËÔ±;run;
-proc sort data=Tjia5;by ¸ú½øÈËÔ±;run;
-proc sort data=nt_daikou1;by ¸ú½øÈËÔ±;run;
-proc sort data=nt_daikou;by ¸ú½øÈËÔ±;run;
-proc sort data=nt_account;by ¸ú½øÈËÔ±;run;
-proc sort data=assignment6;by ¸ú½øÈËÔ±;run;
-proc sort data=assignment4_2_a;by ¸ú½øÈËÔ±;run;
-proc sort data=assignment4_2_b;by ¸ú½øÈËÔ±;run;
+
+proc sort data=yuqi17;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=yuqi815;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=Tjia5;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=nt_daikou1;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=nt_daikou;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=nt_account;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=assignment6;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=assignment4_2_a;by è·Ÿè¿›äººå‘˜;run;
+proc sort data=assignment4_2_b;by è·Ÿè¿›äººå‘˜;run;
 
 data dangtian;
 merge assignment6  nt_account nt_daikou nt_daikou1 yuqi17 yuqi815 assignment4_2_a assignment4_2_b Tjia5 ;
-by ¸ú½øÈËÔ±;
+by è·Ÿè¿›äººå‘˜;
 run;
 
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
-proc sort data=yuqi17a;by ÓªÒµ²¿;run;
-proc sort data=yuqi815a;by ÓªÒµ²¿;run;
-proc sort data=Tjia5a;by ÓªÒµ²¿;run;
-proc sort data=nt_daikou1a;by ÓªÒµ²¿;run;
-proc sort data=nt_daikou_a;by ÓªÒµ²¿;run;
-proc sort data=nt_account_a;by ÓªÒµ²¿;run;
-proc sort data=assignment4_2_aa;by ÓªÒµ²¿;run;
-proc sort data=assignment4_2_bb;by ÓªÒµ²¿;run;
+*************æœ‰æ—¶ä¼šå‡ºç°ç©ºå€¼(ç¨ååˆ é™¤)*******;
+/*data dangtian;*/
+/*set dangtian;*/
+/*if è·Ÿè¿›äººå‘˜^="";*/
+/*run;*/
+*************æœ‰æ—¶ä¼šå‡ºç°ç©ºå€¼*******;
 
-data dangtian_a;
-merge assignment6a  nt_account_a nt_daikou_a nt_daikou1a yuqi17a yuqi815a assignment4_2_aa assignment4_2_bb Tjia5a ;
-by ÓªÒµ²¿;
-
-if kindex(ÓªÒµ²¿,"·ğÉ½") or kindex(ÓªÒµ²¿,"¸£ÖİÎåËÄ") or kindex(ÓªÒµ²¿,"ÏÃÃÅ") or kindex(ÓªÒµ²¿,"Õ¿½­") or kindex(ÓªÒµ²¿,"Òø´¨");
-run;
-
-*************¡¾¿Í·şÈËÔ±·Ö×é¡¿***************;
 data dangtian1;
 set dangtian;
-format ÈËÔ± $40.;
-if ¸ú½øÈËÔ± in ("ÎâÏÄæ¯","Ò×Ç¨Ó¢","¶¡½à","Ô¬Ã÷Ã÷") then ÈËÔ±="a_"||¸ú½øÈËÔ±;
-if ¸ú½øÈËÔ± in ("¸ßºê","ÏÄ¶àÒË1111") then ÈËÔ±="b_"||¸ú½øÈËÔ±;
-if ¸ú½øÈËÔ± in ("ÉÛ»Ô»Ô111","ÏÄ¶àÒË111","Ğ»ÅåÄÈ111","ÕÅ»Û111","¶Å¾ê111","»ÆĞãÁÕ111","ĞìÃ¯Ë¼111") then ÈËÔ±="c_"||¸ú½øÈËÔ±;
-if ¸ú½øÈËÔ± in ("_ÆäËû") then ÈËÔ±="d_"||"ÆäËû»ã×Ü";
-drop ¸ú½øÈËÔ±;
+format äººå‘˜ $40.;
+if è·Ÿè¿›äººå‘˜ in ("å´å¤å§£","ä¸æ´","è¢æ˜æ˜") then äººå‘˜="a_"||è·Ÿè¿›äººå‘˜;
+if è·Ÿè¿›äººå‘˜ in ("é«˜å®") then äººå‘˜="b_"||è·Ÿè¿›äººå‘˜;
+if è·Ÿè¿›äººå‘˜ in ("é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111") then äººå‘˜="c_"||è·Ÿè¿›äººå‘˜;
+if è·Ÿè¿›äººå‘˜ in ("éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111") then äººå‘˜="d_"||è·Ÿè¿›äººå‘˜;
+if è·Ÿè¿›äººå‘˜ in ("_å…¶ä»–") then äººå‘˜="e_"||"å…¶ä»–æ±‡æ€»";
+drop è·Ÿè¿›äººå‘˜;
 run;
-proc sort data=dangtian1;by ÈËÔ±;run;
+proc sort data=dangtian1;by äººå‘˜;run;
 data dangtian1_;
-retain ÈËÔ±;
+retain äººå‘˜;
 set dangtian1;
-if ÈËÔ±="" then delete;
+if äººå‘˜^=""; 
 run;
 
 data dangtian1_;
@@ -981,86 +760,193 @@ run;
 
 
 
-/*data assignment6;*/
-/*set assignment6;*/
-/*format ÈËÔ± $40.;*/
-/*if ¸ú½øÈËÔ± in ("ºúå·çâ","ÎâÏÄæ¯","Ò×Ç¨Ó¢") then ÈËÔ±="a_"||¸ú½øÈËÔ±;*/
-/*if ¸ú½øÈËÔ± in ("¸ßºê","ÏÄ¶àÒË111","¶¡½à","Ô¬Ã÷Ã÷") then ÈËÔ±="b_"||¸ú½øÈËÔ±;*/
-/*if ¸ú½øÈËÔ± in ("_ÆäËû") then ÈËÔ±="c_"||"ÆäËû»ã×Ü";*/
-/*drop ¸ú½øÈËÔ±;*/
-/*run;*/
-/*proc sort data=assignment6;by ÈËÔ±;run;*/
-/*data assignment6;retain ÈËÔ±;set assignment6;run;*/
-/**/
-/*filename DD DDE "EXCEL|[³É¶¼´ßÊÕ±¨±í.xlsx]Sheet1!r4c1:r11c11";*/
-/*data _null_;set assignment6;file DD;put  ÈËÔ± ×òÈÕÓ¦»¹ ×òÈÕÁ÷Èë ×òÈÕÁ÷ÈëÂÊ ±¾ÔÂÓ¦»¹ ±¾ÔÂÁ÷Èë ±¾ÔÂÁ÷ÈëÂÊ ×òÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§ ×Ü¿Û¿îÊı Á÷Ê§ÂÊ  ;run;*/
-
-
-*************¡¾ÓªÒµ²¿·Ö×é¡¿***************;
-data dangtian_a1;
-set dangtian_a;
-format ÃÅµê $40.;
-if kindex(ÓªÒµ²¿,"·ğÉ½") or kindex(ÓªÒµ²¿,"¸£ÖİÎåËÄ") or kindex(ÓªÒµ²¿,"ÏÃÃÅ") or kindex(ÓªÒµ²¿,"Õ¿½­") or kindex(ÓªÒµ²¿,"Òø´¨") then ÃÅµê="v_"||ÓªÒµ²¿;
-drop ÓªÒµ²¿;
+********************************ã€Våˆ†è¡Œè¥ä¸šéƒ¨ã€‘**************************************;
+**********ã€æ˜¨å¤©æµå…¥+æ˜¨å¤©æµå¤±ã€‘***********;
+data branch_vfenhang;
+input è¥ä¸šéƒ¨ $45.;
+cards;
+ä½›å±±å¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+ç¦å·äº”å››è·¯è¥ä¸šéƒ¨
+å¦é—¨å¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+æ¹›æ±Ÿå¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+é“¶å·å¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+ç›åŸå¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+ä¼ŠçŠå¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+åº“å°”å‹’å¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+è´µé˜³å¸‚ç¬¬ä¸€è¥ä¸šéƒ¨
+åˆè‚¥ç«™å‰è·¯è¥ä¸šéƒ¨
+;
 run;
-proc sort data=dangtian_a1;by ÃÅµê;run;
-data dangtian_a1_;retain ÃÅµê;set dangtian_a1;run;
 
-data dangtian_a1_;
-set dangtian_a1_;
+proc sql;
+create table assignment3_1a as 
+select è¥ä¸šéƒ¨,
+sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æ˜¨æ—¥åº”è¿˜,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ) as æ˜¨æ—¥æµå…¥,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æ˜¨æ—¥æµå…¥ç‡ format percent7.2
+from assignment2
+where cut_date=&dt.
+group by è¥ä¸šéƒ¨;
+quit;
+proc sql;
+create table assignment3_2a as 
+select è¥ä¸šéƒ¨, sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as æ˜¨æ—¥æµå¤±
+from assignment2
+where cut_date=&dt.
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table assignment4_1a as 
+select è¥ä¸šéƒ¨,
+sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æœ¬æœˆåº”è¿˜,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ) as æœ¬æœˆæµå…¥,
+sum(è¿˜æ¬¾_å½“æ—¥æ‰£æ¬¾å¤±è´¥åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ) as æœ¬æœˆæµå…¥ç‡ format percent7.2
+from assignment2
+where cut_date<=&dt.
+group by è¥ä¸šéƒ¨;
+quit;
+
+*Våˆ†è¡Œæ‰£æ¬¾æ•°+æµå¤±;
+proc sql;
+create table assignment4_2a as 
+select è¥ä¸šéƒ¨,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as æœ¬æœˆæµå¤±,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æ€»æ‰£æ¬¾æ•°,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æµå¤±ç‡ format percent7.2
+from assignment2
+where mdy(05,17,2019)<=cut_date<=&dt. and æµå¤±è·Ÿè¿›äººå‘˜ in ("é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111")
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table assignment5a as 
+select a.*,b.*,c.*,d.*,e.*
+from branch_vfenhang as a
+left join assignment3_1a as b on a.è¥ä¸šéƒ¨=b.è¥ä¸šéƒ¨
+left join assignment3_2a as c on a.è¥ä¸šéƒ¨=c.è¥ä¸šéƒ¨
+left join assignment4_1a as d on a.è¥ä¸šéƒ¨=d.è¥ä¸šéƒ¨
+left join assignment4_2a as e on a.è¥ä¸šéƒ¨=e.è¥ä¸šéƒ¨;
+quit;
+
+data assignment6a;
+retain è¥ä¸šéƒ¨ æ˜¨æ—¥åº”è¿˜ æ˜¨æ—¥æµå…¥ æ˜¨æ—¥æµå…¥ç‡ æœ¬æœˆåº”è¿˜ æœ¬æœˆæµå…¥ æœ¬æœˆæµå…¥ç‡ æ˜¨æ—¥æµå¤± æœ¬æœˆæµå¤± æ€»æ‰£æ¬¾æ•° æµå¤±ç‡;
+set assignment5a;
+run;
+**********ã€ä»Šå¤©æµå¤±ã€‘***********;
+proc sql;
+create table nt_account_a as 
+select è¥ä¸šéƒ¨,count(*) as ç›®å‰è´¦æˆ·æ•° from assignment2_nt
+where cut_date=&nt.  and pre_1m_status not in('09_ES','11_Settled') and
+cut_dateè·Ÿè¿›äººå‘˜ in ("é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","å¾èŒ‚æ€111","è©¹æ˜ å›111","éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111")
+group by è¥ä¸šéƒ¨;
+quit;
+proc sql;
+create table nt_daikou_a as 
+select è¥ä¸šéƒ¨,count(*) as å½“å¤©ä»£æ‰£æ€»ä¸ªæ•° from assignment2_nt
+where cut_date=&nt. and è¿˜æ¬¾_å½“æ—¥åº”æ‰£æ¬¾åˆåŒ=1
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table nt_daikou1_a as
+select è¥ä¸šéƒ¨,count(*) from cc3_1_(where=(repay_date=&nt.))
+where es^=1
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table yuqi17a as 
+select è¥ä¸šéƒ¨,count(*) as yuqi17 from assignment2_nt
+where cut_date=&nt. and 1<=od_days<=7
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table yuqi815a as 
+select è¥ä¸šéƒ¨,count(*) as yuqi815 from assignment2_nt
+where cut_date=&nt. and 8<=od_days<=15
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table assignment4_2_aa as 
+select è¥ä¸šéƒ¨,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as ä»Šæ—¥æµå¤±
+from assignment2_nt
+where cut_date=&nt.
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table assignment4_2_ba as 
+select è¥ä¸šéƒ¨,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ) as æœ¬æœˆæµå¤±_nt,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æ€»æ‰£æ¬¾æ•°_nt,
+sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒ)/sum(è¿˜æ¬¾_å½“æ—¥æµå…¥15åŠ åˆåŒåˆ†æ¯) as æµå¤±ç‡_nt format percent7.2
+from assignment2_nt
+where mdy(05,17,2019)<=cut_date<=&nt. and æµå¤±è·Ÿè¿›äººå‘˜ in ("é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111")
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sql;
+create table Tjia5_a as 
+select è¥ä¸šéƒ¨,count(*) as T5 from tjia
+where è·Ÿè¿›äººå‘˜ in ("é‚µè¾‰è¾‰111","å¤å¤šå®œ111","è°¢ä½©å¨œ111","å¼ æ…§111","æœå¨Ÿ111","è©¹æ˜ å›111","éƒ­æ¢…å‡¤111","èµ–æµ·æ…§111","ç½—è·¯è·¯111","é‚“é“­èŠ¸111")
+group by è¥ä¸šéƒ¨;
+quit;
+
+proc sort data=yuqi17a;by è¥ä¸šéƒ¨;run;
+proc sort data=yuqi815a;by è¥ä¸šéƒ¨;run;
+proc sort data=Tjia5_a;by è¥ä¸šéƒ¨;run;
+proc sort data=nt_daikou1_a;by è¥ä¸šéƒ¨;run;
+proc sort data=nt_daikou_a;by è¥ä¸šéƒ¨;run;
+proc sort data=nt_account_a;by è¥ä¸šéƒ¨;run;
+proc sort data=assignment6a;by è¥ä¸šéƒ¨;run;
+proc sort data=assignment4_2_aa;by è¥ä¸šéƒ¨;run;
+proc sort data=assignment4_2_ba;by è¥ä¸šéƒ¨;run;
+
+data dangtian_a;
+merge assignment6a(in=a)  nt_account_a nt_daikou_a nt_daikou1_a yuqi17a yuqi815a assignment4_2_aa assignment4_2_ba Tjia5_a ;
+by è¥ä¸šéƒ¨;
+if a;
+run;
+data dangtian_a_;
+set dangtian_a;
 array num _numeric_;
 do over num;
 if num=. then num=0;
 end;
 run;
 
-
-/**/
 /**/
 /*PROC EXPORT DATA=assignment2_1*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="×òÈÕÓ¦»¹Ã÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æ˜¨æ—¥åº”è¿˜æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=assignment2_2*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="½ñÈÕÁ÷ÈëÃ÷Ï¸1"; RUN;*/
-/**/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL ;SHEET="ä»Šæ—¥æµå…¥æ˜ç»†1"; RUN;*/
 /*PROC EXPORT DATA=assignment2_3*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="×òÈÕÁ÷Ê§Ã÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æ˜¨æ—¥æµå¤±æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=assignment2_4*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="±¾ÔÂÓ¦»¹Ã÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æœ¬æœˆåº”è¿˜æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=assignment2_5*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="±¾ÔÂÁ÷ÈëÃ÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æœ¬æœˆæµå…¥æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=nt_daikou_*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="×Ü´ú¿ÛÃ÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æ€»ä»£æ‰£æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=nt_daikou1_*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="×ÜÊ£Óà´ú¿ÛÃ÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æ€»å‰©ä½™ä»£æ‰£æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=yuqi115_*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="ÓâÆÚ1-15ÌìÃ÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="é€¾æœŸ1-15å¤©æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=assignment2_3*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="½ñÈÕÁ÷Ê§Ã÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="ä»Šæ—¥æµå¤±æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=assignment2_6*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="±¾ÔÂÁ÷Ê§Ã÷Ï¸"; RUN;*/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æœ¬æœˆæµå¤±æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=assignment2_7*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="×Ü¿Û¿îÊıÃ÷Ï¸"; RUN;*/
-/**/
-/**/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="æ€»æ‰£æ¬¾æ•°æ˜ç»†"; RUN;*/
 /*PROC EXPORT DATA=Tjia5_*/
-/*OUTFILE= "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx" DBMS=EXCEL REPLACE;SHEET="T¼Ó5ÌáĞÑÃ÷Ï¸"; RUN;*/
+/*OUTFILE= "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx" DBMS=EXCEL REPLACE;SHEET="TåŠ 5æé†’æ˜ç»†"; RUN;*/
 /**/
-/**/
-/*x "F:\A_offline_zky\A_offline\daily\³É¶¼ÓªÒµ²¿Á÷ÈëÁ÷³öÇé¿ö\´úÂëĞŞ¸Ä\³É¶¼´ßÊÕ±¨±í.xlsx";*/
-/**/
-/*filename DD DDE "EXCEL|[³É¶¼´ßÊÕ±¨±í.xlsx]Sheet1!r4c1:r17c21";*/
-/*data _null_;set dangtian1_;file DD;put  ÈËÔ± ×òÈÕÓ¦»¹ ×òÈÕÁ÷Èë ×òÈÕÁ÷ÈëÂÊ ±¾ÔÂÓ¦»¹ ±¾ÔÂÁ÷Èë ±¾ÔÂÁ÷ÈëÂÊ ×òÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§ ×Ü¿Û¿îÊı Á÷Ê§ÂÊ Ä¿Ç°ÕË»§Êı µ±Ìì´ú¿Û×Ü¸öÊı  _TEMG001  yuqi17 yuqi815 ½ñÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§_nt ×Ü¿Û¿îÊı_nt Á÷Ê§ÂÊ_nt T5 ;run;*/
-/**/
-/**/
-/*filename DD DDE "EXCEL|[³É¶¼´ßÊÕ±¨±í.xlsx]Sheet1!r17c1:r21c21";*/
-/*data _null_;set dangtian_a1_;file DD;put  ÃÅµê ×òÈÕÓ¦»¹ ×òÈÕÁ÷Èë ×òÈÕÁ÷ÈëÂÊ ±¾ÔÂÓ¦»¹ ±¾ÔÂÁ÷Èë ±¾ÔÂÁ÷ÈëÂÊ ×òÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§ ×Ü¿Û¿îÊı Á÷Ê§ÂÊ Ä¿Ç°ÕË»§Êı µ±Ìì´ú¿Û×Ü¸öÊı  _TEMG001  yuqi17 yuqi815 ½ñÈÕÁ÷Ê§ ±¾ÔÂÁ÷Ê§_nt ×Ü¿Û¿îÊı_nt Á÷Ê§ÂÊ_nt T5 ;run;*/
+/*x "F:\A_offline_zky\A_offline\daily\æˆéƒ½è¥ä¸šéƒ¨æµå…¥æµå‡ºæƒ…å†µ\æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx";*/
+/*filename DD DDE "EXCEL|[æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx]Sheet1!r4c1:r18c21";*/
+/*data _null_;set dangtian1_;file DD;put  äººå‘˜ æ˜¨æ—¥åº”è¿˜ æ˜¨æ—¥æµå…¥ æ˜¨æ—¥æµå…¥ç‡ æœ¬æœˆåº”è¿˜ æœ¬æœˆæµå…¥ æœ¬æœˆæµå…¥ç‡ æ˜¨æ—¥æµå¤± æœ¬æœˆæµå¤± æ€»æ‰£æ¬¾æ•° æµå¤±ç‡ ç›®å‰è´¦æˆ·æ•° å½“å¤©ä»£æ‰£æ€»ä¸ªæ•°  _TEMG001  yuqi17 yuqi815 ä»Šæ—¥æµå¤± æœ¬æœˆæµå¤±_nt æ€»æ‰£æ¬¾æ•°_nt æµå¤±ç‡_nt T5 ;run;*/
+/*filename DD DDE "EXCEL|[æˆéƒ½å®¢æœéƒ¨å‚¬æ”¶æŠ¥è¡¨.xlsx]Sheet1!r19c1:r28c21";*/
+/*data _null_;set dangtian_a_;file DD;put  è¥ä¸šéƒ¨ æ˜¨æ—¥åº”è¿˜ æ˜¨æ—¥æµå…¥ æ˜¨æ—¥æµå…¥ç‡ æœ¬æœˆåº”è¿˜ æœ¬æœˆæµå…¥ æœ¬æœˆæµå…¥ç‡ æ˜¨æ—¥æµå¤± æœ¬æœˆæµå¤± æ€»æ‰£æ¬¾æ•° æµå¤±ç‡ ç›®å‰è´¦æˆ·æ•° å½“å¤©ä»£æ‰£æ€»ä¸ªæ•°  _TEMG001  yuqi17 yuqi815 ä»Šæ—¥æµå¤± æœ¬æœˆæµå¤±_nt æ€»æ‰£æ¬¾æ•°_nt æµå¤±ç‡_nt T5 ;run;*/
