@@ -1370,6 +1370,9 @@ if contract_no="C2017042817454919685618" and cut_date=mdy(5,25,2019) then »¹¿î_µ
 if contract_no="C2017100815464153742927" and cut_date=mdy(5,28,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017091218001396902870" and cut_date=mdy(5,30,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 
+if contract_no="C2017102010432479509233" and cut_date=mdy(6,10,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017102318270520361973" and cut_date=mdy(6,16,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+
 rename outstanding=´û¿îÓà¶î outstanding_capital=´û¿îÓà¶î_Ê£Óà±¾½ğ²¿·Ö;
 keep contract_no ¿Í»§ĞÕÃû cut_date repay_date clear_date od_days od_periods »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬ »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸ Éí·İÖ¤ºÅÂë
 	·Å¿îÈÕÆÚ es es_date ÓªÒµ²¿ »¹¿î_M1ºÏÍ¬ »¹¿î_M2ºÏÍ¬ »¹¿î_M1ºÏÍ¬´û¿îÓà¶î »¹¿î_M2ºÏÍ¬´û¿îÓà¶î outstanding outstanding_capital ×Ê½ğÇşµÀ CONTRACT_AMOUNT last_oddays od_days_ever »¹¿î_´ÓÎ´ÓâÆÚĞÂÔöM1ºÏÍ¬ »¹¿î_´ÓÎ´ÓâÆÚĞÂÔöM1ºÏÍ¬´û¿îÓà¶î »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸ »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬; 
@@ -1412,6 +1415,9 @@ if contract_no="C2017070416103087301625" and cut_date=mdy(5,23,2019) then »¹¿î_µ
 if contract_no="C2017042817454919685618" and cut_date=mdy(5,25,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017100815464153742927" and cut_date=mdy(5,28,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 if contract_no="C2017091218001396902870" and cut_date=mdy(5,30,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+
+if contract_no="C2017102010432479509233" and cut_date=mdy(6,10,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
+if contract_no="C2017102318270520361973" and cut_date=mdy(6,16,2019) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬=0;
 
 rename outstanding=´û¿îÓà¶î outstanding_capital=´û¿îÓà¶î_Ê£Óà±¾½ğ²¿·Ö;
 keep contract_no ¿Í»§ĞÕÃû cut_date repay_date clear_date od_days od_periods »¹¿î_µ±ÈÕÓ¦¿Û¿îºÏÍ¬ »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬ »¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸ Éí·İÖ¤ºÅÂë
