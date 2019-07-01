@@ -31,14 +31,14 @@
 /*getnames=yes;*/
 /*run;*/
 
-%let month="201905";
+%let month="201906";
 
 data vinDDE;
 set repayfin.payment_g;
 format 放款月份1 yymmdd10.;
 放款月份1=intnx("month",loan_date,0,"b");
 if not kindex(产品小类,"米粒");
-if month^="201906";
+if month^="201907";
 run;
 
 proc sql;
@@ -147,7 +147,7 @@ data vinDDE_zy;
 set vinDDE;
 if kindex(营业部,'上海') or kindex(营业部,'杭州') or kindex(营业部,'宁波') or kindex(营业部,'广州') or kindex(营业部,'惠州') or kindex(营业部,'乌鲁木齐')
 	or kindex(营业部,'南宁') or kindex(营业部,'汕头') or kindex(营业部,'海口') or kindex(营业部,'北京') or kindex(营业部,'天津') or kindex(营业部,'成都') 
-	or kindex(营业部,'兰州') or kindex(营业部,'贵阳') or kindex(营业部,'呼和浩特') or kindex(营业部,'武汉');
+	or kindex(营业部,'兰州') or kindex(营业部,'呼和浩特') or kindex(营业部,'武汉');
 run;
 proc sql;
 create table kan_fk as
@@ -234,7 +234,7 @@ data vinDDE_zy;
 set vinDDE;
 if not (kindex(营业部,'上海') or kindex(营业部,'杭州') or kindex(营业部,'宁波') or kindex(营业部,'广州') or kindex(营业部,'惠州') or kindex(营业部,'乌鲁木齐')
 	or kindex(营业部,'南宁') or kindex(营业部,'汕头') or kindex(营业部,'海口') or kindex(营业部,'北京') or kindex(营业部,'天津') or kindex(营业部,'成都') 
-	or kindex(营业部,'兰州') or kindex(营业部,'贵阳') or kindex(营业部,'呼和浩特') or kindex(营业部,'武汉'));
+	or kindex(营业部,'兰州') or kindex(营业部,'贵阳') or kindex(营业部,'呼和浩特') or kindex(营业部,'武汉')) or kindex(营业部,'贵阳');
 run;
 proc sql;
 create table kan_fk as
