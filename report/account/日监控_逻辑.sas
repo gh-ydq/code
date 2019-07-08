@@ -236,8 +236,13 @@ data zd;
 set zd_pr(drop=ÇøÓò ·ÖÖĞĞÄ) zd_qy zd_fzx zd_zy;
 run;
 
+proc sql;
+create table pay_repay as 
+select a.*,b.BEGINNING_CAPITAL,b.CURR_RECEIVE_INTEREST_AMT,b.MONTH_SERVICE_FEE from payment_daily as a 
+left join account.repay_plan as b on a.contract_no=b.contract_no and a.repay_date=b.repay_date;
+quit;
 data zd_hk_pr;
-set payment_daily;
+set pay_repay;
 format ·ÖÖĞĞÄ ÇøÓò ÕûÌå $20.;
 if  ÓªÒµ²¿ = "ÉÏº£µÚ¶şÓªÒµ²¿" then ÓªÒµ²¿ = "ÉÏº£¸£ÖİÂ·ÓªÒµ²¿";
 if ÓªÒµ²¿="ÉÏº£¸£ÖİÂ·ÓªÒµ²¿" then ·ÖÖĞĞÄ = "ÉÏº£·ÖÖĞĞÄ";
@@ -264,6 +269,10 @@ if ÓªÒµ²¿ in ("ÉÏº£¸£ÖİÂ·ÓªÒµ²¿","º¼Öİ½¨¹ú±±Â·ÓªÒµ²¿",	"Äş²¨ÊĞµÚÒ»ÓªÒµ²¿","¹ãÖİÊ
 	"ºÏ·ÊÕ¾Ç°Â·ÓªÒµ²¿","ÑÎ³ÇÊĞµÚÒ»ÓªÒµ²¿","ÉÛÑôÊĞµÚÒ»ÓªÒµ²¿","¹óÑôÊĞµÚÒ»ÓªÒµ²¿","ÒÁÀçÊĞµÚÒ»ÓªÒµ²¿","¿â¶ûÀÕÊĞµÚÒ»ÓªÒµ²¿") then ÔÚÓª="ÒÑ¹Ø";
 
 if ÇøÓò in ("ÄÏÇø","±±Çø","ÒÑ¹ØÃÅµê»ã×Ü") then ÕûÌå="È«¹ú";
+ÕËµ¥ÈÕ´û¿îÓà¶î15·ÖÄ¸=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸;
+ÕËµ¥ÈÕ´û¿îÓà¶î15·Ö×Ó=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬;
+ÕËµ¥ÈÕ´û¿îÓà¶î7·ÖÄ¸=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸;
+ÕËµ¥ÈÕ´û¿îÓà¶î7·Ö×Ó=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬;
 run;
 proc sql;
 create table zd_hk_yyb as
@@ -342,36 +351,36 @@ run;
 proc sql;
 create table zd_lsl_yyb as
 select ÓªÒµ²¿ as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÓªÒµ²¿;quit;
 proc sql;
 create table zd_lsl_qy as
 select ÇøÓò as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÇøÓò;quit;
 proc sql;
 create table zd_lsl_zy as
 select ÔÚÓª as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÔÚÓª;quit;
 proc sql;
 create table zd_lsl_fzx as
 select ·ÖÖĞĞÄ as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ·ÖÖĞĞÄ;quit;
 proc sql;
 create table zd_lsl_qg as
 select ÕûÌå as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
-sum(»¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î15·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÕûÌå;quit;
 data zd_hk2;
@@ -380,36 +389,36 @@ run;
 proc sql;
 create table zd_lsl7_yyb as
 select ÓªÒµ²¿ as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó_
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó_
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÓªÒµ²¿;quit;
 proc sql;
 create table zd_lsl7_qy as
 select ÇøÓò as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó_
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó_
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÇøÓò;quit;
 proc sql;
 create table zd_lsl7_zy as
 select ÔÚÓª as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó_
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó_
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÔÚÓª;quit;
 proc sql;
 create table zd_lsl7_fzx as
 select ·ÖÖĞĞÄ as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó_
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó_
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ·ÖÖĞĞÄ;quit;
 proc sql;
 create table zd_lsl7_qg as
 select ÕûÌå as Î¬¶È,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
-sum(»¹¿î_µ±ÈÕÁ÷Èë7¼ÓºÏÍ¬) as Á÷Ê§ºÏÍ¬·Ö×Ó_
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·ÖÄ¸) as Á÷Ê§ºÏÍ¬·ÖÄ¸_,
+sum(ÕËµ¥ÈÕ´û¿îÓà¶î7·Ö×Ó) as Á÷Ê§ºÏÍ¬·Ö×Ó_
 from zd_hk_pr(where=(cut_date^=&pde. and cut_date<=&dt.))
 group by ÕûÌå;quit;
 data zd_hk3;
