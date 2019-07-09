@@ -106,6 +106,16 @@ run;
 /*proc sort data=all nodupkey;by contract_no ;run;*/
 
 proc sort data=all ;by repay_date;run;
+proc sql;
+create table all_ as 
+select a.*,b.BEGINNING_CAPITAL,b.CURR_RECEIVE_INTEREST_AMT,b.MONTH_SERVICE_FEE from all as a 
+left join account.repay_plan as b on a.contract_no=b.contract_no and a.repay_date=b.repay_date;
+quit;
+data all_1;
+set all_;
+贷款余额=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE);
+drop BEGINNING_CAPITAL CURR_RECEIVE_INTEREST_AMT MONTH_SERVICE_FEE;
+run;
 
 
 *---------------------两个月前C---------------------------------------*;
@@ -205,7 +215,7 @@ keep contract_no 客户姓名 营业部 还款_M2合同贷款余额   贷款余额_剩余本金部分;
 rename 贷款余额_剩余本金部分=还款_M2合同贷款余额_剩余本金部分;
 run;
 
-/*PROC EXPORT DATA=all OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="流失分母";run;*/
+/*PROC EXPORT DATA=all_1 OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="流失分母";run;*/
 /*PROC EXPORT DATA=C1 OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="1个月前的C";run;*/
 /*PROC EXPORT DATA=C2 OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="2个月前的C";run;*/
 /*PROC EXPORT DATA=dept1_m OUTFILE= "E:\guan\日监控临时报表\特殊需求\穆卿\dept.xlsx" DBMS=EXCEL REPLACE;SHEET="1个月前准M2客户明细";run;*/

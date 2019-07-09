@@ -181,7 +181,16 @@ proc append data=cc base=new_overdue;run;
 %new_overdue;
 /*%let dt=mdy(12,31,2017);*/
 *累计滑落明细;
-
+proc sql;
+create table pay_repay as 
+select a.*,b.BEGINNING_CAPITAL,b.CURR_RECEIVE_INTEREST_AMT,b.MONTH_SERVICE_FEE from payment_daily as a 
+left join account.repay_plan as b on a.contract_no=b.contract_no and a.repay_date=b.repay_date;
+quit;
+data pay_repay_;
+set pay_repay;
+账单日贷款余额15分母=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同分母;
+账单日贷款余额15分子=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同;
+run;
 %macro eight_overdue;
 proc delete data=eight_overdue;run;
 data _null_;
@@ -190,12 +199,12 @@ call symput("n", n);
 run;
 %do i=0 %to &n.;
 data cc(drop=还款_当日扣款失败合同 REPAY_DATE od_days);
-set payment_daily(keep=CONTRACT_NO od_days 营业部  还款_当日流入15加合同 客户姓名 cut_date REPAY_DATE 还款_当日扣款失败合同 身份证号码 od_periods);
+set pay_repay_(keep=CONTRACT_NO od_days 营业部  还款_当日流入15加合同 客户姓名 cut_date REPAY_DATE 还款_当日扣款失败合同 身份证号码 od_periods 账单日贷款余额15分子);
 if 营业部^="APP";
 if 营业部^="";*去除米粒;
 last_oddays=lag(od_days);
 if 还款_当日流入15加合同=1 and cut_date=intnx("day",intnx("month",&dt.,0,"b"),&i.);
-rename cut_date=流入日期;
+rename cut_date=流入日期 账单日贷款余额15分子=贷款余额;
 run;
 proc append data=cc base=eight_overdue;run;
 data eight_overdue;
@@ -262,8 +271,8 @@ data _null_;set clear_17detail;file DD;put contract_no  营业部 repay_date 还清日
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月流入合同明细!r2c1:r10000c4';
 data _null_;set New_overdue;file DD;put contract_no 客户姓名 营业部 流入日期  ;run;
 
-filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月滑落合同明细!r2c1:r10000c4';
-data _null_;set Eight_overdue;file DD;put contract_no  客户姓名 营业部 流入日期 ;run;
+filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月滑落合同明细!r2c1:r10000c5';
+data _null_;set Eight_overdue;file DD;put contract_no  客户姓名 营业部 流入日期 贷款余额;run;
 
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]c_m1客户明细!r2c1:r10000c6';
 data _null_;set payment_daily(where=((od_days=0 and 还款_当日扣款失败合同=1 and repay_date=cut_date or 1<=od_days<=30) and cut_date =&dt.));
