@@ -272,6 +272,7 @@ if status = "07_M6" and od_days=151 then begin_label=1;
 if due_pd=. then due_pd=day(repay_date);*部分逾期期数超过其剩余应还期数的合同号due_pd会变成空;
 if due_nd=. then due_nd=day(repay_date);
 if status in ("03_M2","04_M3","05_M4","06_M5","07_M6", "08_M6+") then do;due_pd=day(cut_date);due_nd=day(cut_date);end;
+if nextmonth_repay_date=. and nowmonth_repay_date^=. then nextmonth_repay_date=intnx('month',nowmonth_repay_date,1);*nextmonth_repay_date为空时，最后一期逾期1-30的ending得不到数据;
 run;
 
 *当上月底是31号周期，将30改成31;
