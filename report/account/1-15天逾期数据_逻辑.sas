@@ -25,6 +25,9 @@ nt=intnx("day",dt,1);
 call symput("nt", nt);
 week = weekday(dt);
 call symput('week',week);
+format l_month_end yymmdd10.;
+l_month_end=intnx('month',dt,-1,'e');
+call symput('l_month_end',l_month_end);
 run;
 data payment_daily;
 set repayFin.payment_daily;
@@ -191,6 +194,12 @@ set pay_repay;
 账单日贷款余额15分母=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同分母;
 账单日贷款余额15分子=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同;
 run;
+data flow_Denominator;
+set pay_repay_;
+if cut_date^=&l_month_end. and 营业部^="APP";
+if 还款_当日流入15加合同分母=1;
+keep contract_no od_days 营业部 账单日贷款余额15分母  REPAY_DATE cut_date 客户姓名 od_periods;
+run;
 %macro eight_overdue;
 proc delete data=eight_overdue;run;
 data _null_;
@@ -217,6 +226,8 @@ proc sort data =one_seven ;by repay_date;run;
 proc sort data =clear_17detail ;by repay_date;run;
 proc sort data =New_overdue ;by 流入日期;run;
 proc sort data =Eight_overdue ;by 流入日期;run;
+proc sort data =flow_Denominator ;by REPAY_DATE;run;
+
 data test1_7 ;
 set payment_daily;
 if 营业部^="APP";
@@ -273,6 +284,9 @@ data _null_;set New_overdue;file DD;put contract_no 客户姓名 营业部 流入日期  ;r
 
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月滑落合同明细!r2c1:r10000c5';
 data _null_;set Eight_overdue;file DD;put contract_no  客户姓名 营业部 流入日期 贷款余额;run;
+
+filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月流失合同分母!r2c1:r10000c5';
+data _null_;set flow_Denominator;file DD;put contract_no  客户姓名 营业部 REPAY_DATE 账单日贷款余额15分母;run;
 
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]c_m1客户明细!r2c1:r10000c6';
 data _null_;set payment_daily(where=((od_days=0 and 还款_当日扣款失败合同=1 and repay_date=cut_date or 1<=od_days<=30) and cut_date =&dt.));
