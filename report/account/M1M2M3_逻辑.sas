@@ -210,12 +210,123 @@ run;
 /*PROC EXPORT DATA=mm2*/
 /*OUTFILE= "E:\guan\日监控临时报表\M1M2M3\穆卿\当前M1及M2客户明细_&dtt..xls" DBMS=EXCEL REPLACE;SHEET="M2客户明细"; RUN;*/
 
+
+*增加M2还款明细;
+*因为payment_daily还款日期取的是第一次对公日期,故部分还款客户实际还款是m2，但是对公日期影响会把分母分子算进m1，仅当已还款会出现该情况;
+data payment;
+set repayfin.payment;
+run;
+*月初队列;
+data m2_denominator_1;
+set payment;
+if 营业部^="APP";
+if cut_date=&last_month_end.;
+if 30<od_days<60;
+keep contract_no cut_date od_days;
+run;
+*本月新增;
+data m2_denominator_2;
+set payment_daily;
+if 营业部^="APP";
+if cut_date^=&last_month_end.;
+if od_days=31;
+keep contract_no cut_date od_days;
+run;
+data m2_denominator;
+set m2_denominator_2 m2_denominator_1;
+run;
+proc sort data=m2_denominator;by contract_no cut_date;run;
+proc sort data=m2_denominator out=aa1 nouniquekey;by contract_no;run;
+/*proc sort data=m2_denominator nodupkey;by contract_no;run;*/
+proc sql;
+create  table m2_denominator_ as 
+select a.contract_no,a.cut_date,b.资金渠道,b.客户姓名,b.营业部,b.贷款余额 as 贷款余额_1月前 from m2_denominator as a
+left join payment_daily(where=(营业部^="APP" and cut_date=&last_month_end.)) as b on a.contract_no=b.contract_no;
+quit;
+proc sort data=m2_denominator_ nodupkey;by contract_no cut_date;run;
+*本月还款且还款日期的逾期天数在逾期状态范围内;
+data m2_molecule;
+set payment_daily;
+if 营业部^="APP" and cut_date^=&last_month_end.;
+/*if clear_date=cut_date;*/
+if 30<=last_oddays<60 and last_oddays>od_days;
+keep contract_no cut_date od_days last_oddays 贷款余额;
+run;
+proc sql;
+create table m2_denominator_e as 
+select a.*,b.贷款余额,b.cut_date as 还款日期 from m2_denominator_ as a
+left join m2_molecule as b on a.contract_no=b.contract_no and a.cut_date<=b.cut_date;
+quit;
+proc sort data=m2_denominator_e;by descending 还款日期 cut_date;run;
+data m2_denominator_e;
+set m2_denominator_e;
+attrib _all_ label="";
+drop cut_date;
+run;
+
+*增加M3还款明细;
+data m3_denominator_1;
+set payment;
+if 营业部^="APP";
+if cut_date=&last_month_end.;
+if 60<od_days<90;
+keep contract_no cut_date od_days;
+run;
+data m3_denominator_2;
+set payment_daily;
+if 营业部^="APP";
+if cut_date^=&last_month_end.;
+if od_days=61;
+keep contract_no cut_date od_days;
+run;
+data m3_denominator;
+set m3_denominator_2 m3_denominator_1;
+run;
+proc sort data=m3_denominator;by contract_no cut_date;run;
+proc sort data=m3_denominator out=aa1 nouniquekey;by contract_no;run;
+/*proc sort data=m2_denominator nodupkey;by contract_no;run;*/
+proc sql;
+create  table m3_denominator_ as 
+select a.contract_no,a.cut_date,b.资金渠道,b.客户姓名,b.营业部,b.贷款余额 as 贷款余额_1月前 from m3_denominator as a
+left join payment_daily(where=(营业部^="APP" and cut_date=&last_month_end.)) as b on a.contract_no=b.contract_no;
+quit;
+proc sort data=m3_denominator_ nodupkey;by contract_no cut_date;run;
+data m3_molecule;
+set payment_daily;
+if 营业部^="APP" and cut_date^=&last_month_end.;
+/*if clear_date=cut_date;*/
+if 60<=last_oddays<90 and last_oddays>od_days;
+keep contract_no cut_date od_days last_oddays 贷款余额;
+run;
+proc sql;
+create table m3_denominator_e as 
+select a.*,b.贷款余额,b.cut_date as 还款日期 from m3_denominator_ as a
+left join m3_molecule as b on a.contract_no=b.contract_no and a.cut_date<=b.cut_date;
+quit;
+proc sort data=m3_denominator_e;by descending 还款日期 cut_date;run;
+data m3_denominator_e;
+set m3_denominator_e;
+attrib _all_ label="";
+drop cut_date;
+run;
+
 *---------------------------------------------------------------部分还款客户-----------------------------------------------------------------------*;
-data aa;
+data part_payment_1;
 set payment_daily(where=(cut_date=&dt.));
 if 营业部^="APP";
 if 还款_M2合同贷款余额>0;
 run;
+*增加M3状态的客户;
+proc sql;
+create table part_payment_2 as 
+select * from payment_daily where cut_date=&dt. and 营业部^="APP" and od_days>61 and contract_no in 
+(select contract_no from m3_denominator);
+quit;
+data aa;
+set part_payment_1 part_payment_2;
+run;
+proc sort data=aa nodupkey;by contract_no;run;
+
 *找出属于晋商的客户;
 data aa1;
 set aa;
@@ -276,10 +387,15 @@ if 已还本息>0;
 keep contract_no 客户姓名 已还本息;
 run;
 
+
 /*PROC EXPORT DATA=kank_*/
 /*OUTFILE= "E:\guan\日监控临时报表\M1M2M3\朱琨\M1M2-M2M3_&dtt..xls" DBMS=EXCEL REPLACE;SHEET="M1M2还款客户"; RUN;*/
 /*PROC EXPORT DATA=kankk_*/
 /*OUTFILE= "E:\guan\日监控临时报表\M1M2M3\朱琨\M1M2-M2M3_&dtt..xls" DBMS=EXCEL REPLACE;SHEET="M2M3还款客户"; RUN;*/
+/*PROC EXPORT DATA=m2_denominator_e*/
+/*OUTFILE= "E:\guan\日监控临时报表\M1M2M3\朱琨\M1M2-M2M3_&dtt..xls" DBMS=EXCEL REPLACE;SHEET="31-60天还款客户"; RUN;*/
+/*PROC EXPORT DATA=m3_denominator_e*/
+/*OUTFILE= "E:\guan\日监控临时报表\M1M2M3\朱琨\M1M2-M2M3_&dtt..xls" DBMS=EXCEL REPLACE;SHEET="61-90天还款客户"; RUN;*/
 /*PROC EXPORT DATA=bill_month*/
 /*OUTFILE= "E:\guan\日监控临时报表\M1M2M3\朱琨\M1M2-M2M3_&dtt..xls" DBMS=EXCEL REPLACE;SHEET="当月账单还款客户列表"; RUN;*/
 /**/
