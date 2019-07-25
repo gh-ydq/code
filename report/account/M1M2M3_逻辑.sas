@@ -316,14 +316,26 @@ set payment_daily(where=(cut_date=&dt.));
 if 营业部^="APP";
 if 还款_M2合同贷款余额>0;
 run;
-*增加M3状态的客户;
+*增加M1M2状态的客户;
 proc sql;
 create table part_payment_2 as 
+select * from payment_daily where cut_date=&dt. and 营业部^="APP" and od_days>15 and contract_no in 
+(select contract_no from kank_);
+quit;
+*增加M2M3状态的客户;
+proc sql;
+create table part_payment_3 as 
+select * from payment_daily where cut_date=&dt. and 营业部^="APP" and od_days>31 and contract_no in 
+(select contract_no from kankk_);
+quit;
+*增加M3状态的客户;
+proc sql;
+create table part_payment_4 as 
 select * from payment_daily where cut_date=&dt. and 营业部^="APP" and od_days>61 and contract_no in 
 (select contract_no from m3_denominator);
 quit;
 data aa;
-set part_payment_1 part_payment_2;
+set part_payment_1 part_payment_2 part_payment_3 part_payment_4;
 run;
 proc sort data=aa nodupkey;by contract_no;run;
 
