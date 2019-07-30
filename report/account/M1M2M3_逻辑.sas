@@ -171,13 +171,24 @@ proc sort data=kankk_;by  descending 还款日期;run;
 /*end;*/
 /*run;*/*/;
 
-data bill_month;
+data bill_month_1;
 set payment_daily(where=(cut_date=&dt.));
 if 营业部^="APP";
 if &month_begin.<=repay_date<=&month_end.;
 if clear_date>0;
 keep contract_no 客户姓名 REPAY_DATE CLEAR_DATE  ;
 run;
+data bill_month_2;
+set repayfin.payment_daily;
+if 营业部^="APP";
+if clear_date>0;
+if od_days=0 and 0<last_oddays<=31 and es=1 and status^='09_ES';
+keep contract_no 客户姓名 REPAY_DATE CLEAR_DATE  ;
+run;
+data bill_month;
+set bill_month_1 bill_month_2;
+run;
+proc sort data=bill_month nodupkey;by contract_no;run;
 /*proc sort data=aa;by  REPAY_DATE CLEAR_DATE  ;run;*/
 
 *导出文件已移至最后;
