@@ -105,10 +105,10 @@
 /*;*/
 /*run;*/
 
-%let llastmonth="201905";*新的一月需修改*;
-%let lastmonth="201906";*新的一月需修改*;
-%let nowmonth="201907";*新的一月需修改*;
-%let nextwmonth="201908";*新的一月需修改*;
+%let llastmonth="201906";*新的一月需修改*;
+%let lastmonth="201907";*新的一月需修改*;
+%let nowmonth="201908";*新的一月需修改*;
+%let nextwmonth="201909";*新的一月需修改*;
 
 data aaa;
 format month_begin month_end last_month_begin last_month_end next_month_begin  llast_month_end yymmdd10.;
