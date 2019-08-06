@@ -35,6 +35,23 @@ if contract_no='C2018101613583597025048' then delete;*¿âÈÈÎ÷¡¤ÂíºÏÄ¾Ìá²»ÓÃ´ßÊÕ,Ì
 if contract_no='C2017121414464569454887' then delete;*½¯éªÎ¯Íâ¿Í»§²»ÓÃ´ßÊÕ,ÌŞ³ı·ÖÄ¸·Ö×Ó;
 if contract_no='C2017111716235470079023' and month='201904' then delete;*ÍõÀöÇà4ÔÂ·İ×öÕÊÌ«³Ù£¬4ÔÂ·İ²»¼ÆËã·ÖÄ¸·Ö×Ó,ÌŞ³ı·ÖÄ¸·Ö×Ó;
 run;
+*¼ÓÉÏÌáÇ°½áÇåµÄÁ÷Ê§·ÖÄ¸;
+data bill_main;
+set account.bill_main;
+if kindex(BILL_CODE,'BLC');
+if &last_month_end.-15<=repay_date<=&month_end.-16;
+run;
+proc sort data=bill_main nodupkey;by contract_no;run;
+proc sql;
+create table payment_daily_ as 
+select a.*,b.repay_date as repay_date_tz from payment_daily as a
+left join bill_main as b on a.contract_no=b.contract_no;
+quit;
+data payment_daily;
+set payment_daily_;
+if es=1 and es_date>=&last_month_end.-15 and cut_date=intnx('day',repay_date_tz,16) then »¹¿î_µ±ÈÕÁ÷Èë15¼ÓºÏÍ¬·ÖÄ¸=1;
+run;
+
 data cc;
 set account.bill_main(where=(repay_date=&nt. and bill_status not in ("0000","0003")));
 run;
