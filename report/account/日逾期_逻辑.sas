@@ -108,7 +108,7 @@ QUIT;
 /*total—每日*/
 data payment_daily;
 set repayfin.payment_daily(where=(cut_date ^=&lmd.));
-if 营业部 ^="APP";
+if 营业部 ^="APP" and es^=1;
 if pre_1m_status not in('09_ES','11_Settled');
 format 正常贷款余额 M1_贷款余额 M2_贷款余额 M3_贷款余额 M4_贷款余额 M5_贷款余额 M6_贷款余额 M6plus_贷款余额;
 if (od_days=0 and 还款_当日扣款失败合同 ^=1) or od_days=. then 正常贷款余额 = 贷款余额;
