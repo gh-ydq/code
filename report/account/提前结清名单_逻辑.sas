@@ -275,7 +275,7 @@ else do;
 if od_days=3;
 end;
 if level_policy_out=1;
-if Ó¶½ğ3>=400;
+if Ó¶½ğ2>=400;
 run;
 proc sql;
 create table list_7 as 
