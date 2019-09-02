@@ -1359,13 +1359,17 @@ if 30 < od_days <= 60 then do; 还款_M2合同 = 1; 还款_M2合同贷款余额 = outstandin
 
 if contract_no="C2017112014374389197751" and cut_date=mdy(3,24,2019) then 还款_当日扣款失败合同=0;
 
-if contract_no="C2017091218001396902870" and cut_date=mdy(6,30,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2017121216390512535887" and cut_date=mdy(7,1,2019) then 还款_当日流入15加合同=0;
-if contract_no="C152040535762302300003560" and cut_date=mdy(7,30,2019) then 还款_当日流入15加合同=0;
 if contract_no="C2017091218001396902870" and cut_date=mdy(7,30,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017102010432479509233" and cut_date=mdy(7,11,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017110814490568964179" and cut_date=mdy(7,29,2019) then 还款_当日流入15加合同=0;
+
+if contract_no="C151512823249002300002520" and cut_date=mdy(8,4,2019) then 还款_当日流入15加合同=0;
+if contract_no="C152118804858403000004937" and cut_date=mdy(8,12,2019) then 还款_当日流入15加合同=0;
+if contract_no="C153058761014703000002461" and cut_date=mdy(8,19,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017072616504292556165" and cut_date=mdy(8,18,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017092014091889449130" and cut_date=mdy(8,12,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017092717354973897180" and cut_date=mdy(8,25,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017093013390116932472" and cut_date=mdy(8,27,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2018050716442882253329" and cut_date=mdy(8,27,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2018052417360318696771" and cut_date=mdy(8,22,2019) then 还款_当日流入15加合同=0;
 
 rename outstanding=贷款余额 outstanding_capital=贷款余额_剩余本金部分;
 keep contract_no 客户姓名 cut_date repay_date clear_date od_days od_periods 还款_当日应扣款合同 还款_当日扣款失败合同 还款_当日流入7加合同 还款_当日流入7加合同分母 身份证号码
@@ -1399,13 +1403,17 @@ if 30 < od_days <= 60 then do; 还款_M2合同 = 1; 还款_M2合同贷款余额 = outstandin
 
 if contract_no="C2017112014374389197751" and cut_date=mdy(3,24,2019) then 还款_当日扣款失败合同=0;
 
-if contract_no="C2017091218001396902870" and cut_date=mdy(6,30,2019) then 还款_当日流入15加合同=0;
-
-if contract_no="C2017121216390512535887" and cut_date=mdy(7,1,2019) then 还款_当日流入15加合同=0;
-if contract_no="C152040535762302300003560" and cut_date=mdy(7,30,2019) then 还款_当日流入15加合同=0;
 if contract_no="C2017091218001396902870" and cut_date=mdy(7,30,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017102010432479509233" and cut_date=mdy(7,11,2019) then 还款_当日流入15加合同=0;
-if contract_no="C2017110814490568964179" and cut_date=mdy(7,29,2019) then 还款_当日流入15加合同=0;
+
+if contract_no="C151512823249002300002520" and cut_date=mdy(8,4,2019) then 还款_当日流入15加合同=0;
+if contract_no="C152118804858403000004937" and cut_date=mdy(8,12,2019) then 还款_当日流入15加合同=0;
+if contract_no="C153058761014703000002461" and cut_date=mdy(8,19,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017072616504292556165" and cut_date=mdy(8,18,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017092014091889449130" and cut_date=mdy(8,12,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017092717354973897180" and cut_date=mdy(8,25,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2017093013390116932472" and cut_date=mdy(8,27,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2018050716442882253329" and cut_date=mdy(8,27,2019) then 还款_当日流入15加合同=0;
+if contract_no="C2018052417360318696771" and cut_date=mdy(8,22,2019) then 还款_当日流入15加合同=0;
 
 rename outstanding=贷款余额 outstanding_capital=贷款余额_剩余本金部分;
 keep contract_no 客户姓名 cut_date repay_date clear_date od_days od_periods 还款_当日应扣款合同 还款_当日扣款失败合同 还款_当日流入7加合同 还款_当日流入7加合同分母 身份证号码
