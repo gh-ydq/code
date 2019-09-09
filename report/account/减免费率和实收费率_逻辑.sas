@@ -140,19 +140,25 @@ if CREATE_NAME='' then CREATE_NAME=userName;
 if REAMRK='' then REAMRK=BREAKS_REMARK;
 run;
 *********************************************************************申请人姓名 end****************************************************************;
-
+data payment_daily;
+set repayfin.payment_daily;
+if 营业部^="APP";
+run;
 proc sql;
 create table bill_hm2 as 
-select a.*,b.qigong,c.BREAKS_AMOUNT as amount,d.CREATE_NAME,d.REAMRK,e.营业部,e.name
+select a.*,b.qigong,c.BREAKS_AMOUNT as amount,d.CREATE_NAME,d.REAMRK,f.营业部,f.客户姓名 as name,f.es
 from bill_hm as a
 left join repay_plan as b on a.contract_no=b.contract_no and a.CURR_PERIOD=b.CURR_PERIOD
 left join fee_b2 as c on a.contract_no=c.contract_no and a.CURR_PERIOD=c.PERIOD
 left join fee_breaks_apply_dtl_3 as d on a.contract_no=d.contract_no and a.CURR_PERIOD=d.PERIOD
-left join apply_info as e on a.contract_no=e.contract_no;
+
+left join payment_daily as f on a.contract_no=f.contract_no and cut_date=&dt.;
 quit;
 data bill_hm3;
 set bill_hm2;
 应收罚息=sum(CURR_RECEIPT_AMT,-qigong);
+if es=1 then 应收罚息=amount;
+if contract_no='C2017072016580644447297' then 应收罚息=amount;*提前结清金额会集中在还款当期，导致应收罚息计算太大;
 if 应收罚息>1;
 实收罚息=sum(应收罚息,-amount);
 if 实收罚息<0.01 then 实收罚息=0;
