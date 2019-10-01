@@ -14,7 +14,7 @@
 /*x  "E:\guan\催收报表\逾期豁免\逾期16天以上应收罚息及豁免情况.xlsx"; */
 /*x  "E:\guan\催收报表\逾期豁免\逾期应收罚息及豁免情况.xlsx"; */
 
-%let month="201909";*修改为本月月份;
+%let month="201910";*修改为本月月份;
 
 data null;
 format dt yymmdd10.;
@@ -160,6 +160,7 @@ set bill_hm2;
 if es=1 then 应收罚息=amount;
 if contract_no='C2017072016580644447297' then 应收罚息=amount;*提前结清金额会集中在还款当期，导致应收罚息计算太大;
 if contract_no='C2018051415033324144130' then delete;*超长逾期客户，直接在某期结清;
+if contract_no='C2017042115553351588604' then delete;*超长逾期客户，直接在某期结清;
 if 应收罚息>1;
 实收罚息=sum(应收罚息,-amount);
 if 实收罚息<0.01 then 实收罚息=0;
