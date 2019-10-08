@@ -27,10 +27,21 @@ run;
 	%do i =1 %to &lpn.;
 
 		proc sql;
-			create table kan1(where=(pre_1m_status in ("01_C","02_M1","03_M2","00_NB","04_M3","05_M4","06_M5","07_M6"))) as
+			create table kan1_1(where=(pre_1m_status in ("01_C","02_M1","03_M2","00_NB","04_M3","05_M4","06_M5","07_M6"))) as
 				select pre_1m_status,sum(贷款余额_1月前) as  贷款余额_1月前 
 					from yc.payment_g(where=(month=&&month_&i. and 产品大类 ^="续贷")) group by pre_1m_status;
 		quit;
+		*201908开始无新放款数据，此处添加新放款数据为0，以适应DDE;
+		data kan1_2;
+		format pre_1m_status $24.;
+		pre_1m_status="00_NB";
+		贷款余额_1月前=0;
+		run;
+		data kan1;
+		set kan1_1 kan1_2;
+		run;
+		proc sort data=kan1;by pre_1m_status descending 贷款余额_1月前;run;
+		proc sort data=kan1 nodupkey;by pre_1m_status;run;
 
 		filename DD DDE "EXCEL|[Is_Was_Analysis.xls]贷款余额!r&&was_b_&i..c2:r&&was_e_&i..c2";
 
@@ -58,12 +69,31 @@ run;
 			by  pre_1m_status  status;
 		run;
 
-		proc transpose data=kan2a out=kan3  prefix=Interest_;
+		proc transpose data=kan2a out=kan3_1  prefix=Interest_;
 			by pre_1m_status;
 			id status;
 			var 贷款余额;
 		run;
-
+		*201908开始无新放款数据，此处添加新放款数据为0，以适应DDE;
+		data kan3_2;
+		format pre_1m_status $24.;
+		format _NAME_ $8.;
+		pre_1m_status="00_NB";
+		_NAME_="贷款余额";
+		Interest_01_C=0;
+		Interest_02_M1=0;
+		Interest_03_M2 =0;
+		Interest_04_M3 =0;
+		Interest_05_M4 =0;
+		Interest_06_M5 =0;
+		Interest_07_M6 =0;
+		Interest_08_M6_=0;
+		run;
+		data kan3;
+		set kan3_2 kan3_1;
+		run;
+		proc sort data=kan3;by pre_1m_status descending Interest_01_C;run;
+		proc sort data=kan3 nodupkey;by pre_1m_status;run;
 		filename DD DDE "EXCEL|[Is_Was_Analysis.xls]贷款余额!r&&was_b_&i..c3:r&&was_e_&i..c10";
 
 		data _null_;
