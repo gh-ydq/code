@@ -107,7 +107,7 @@
 
 %let llastmonth="201908";*新的一月需修改*;
 %let lastmonth="201909";*新的一月需修改*;
-%let nowmonth="2019010";*新的一月需修改*;
+%let nowmonth="201910";*新的一月需修改*;
 %let nextwmonth="201911";*新的一月需修改*;
 
 data aaa;
