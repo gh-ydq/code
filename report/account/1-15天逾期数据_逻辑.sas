@@ -57,12 +57,21 @@ end_date = mdy(month(date),25,year(date));end;
 call symput("fk_month_begin",fk_month_begin);
 call symput("end_date",end_date);
 run;
-data payment_daily;
+data payment_daily_;
 set repayFin.payment_daily;
 if contract_no='C2018101613583597025048' then delete;*库热西·马合木提不用催收,剔除分母分子;
 if contract_no='C2017121414464569454887' then delete;*蒋楠委外客户不用催收,剔除分母分子;
 if contract_no='C2017111716235470079023' and month='201904' then delete;*王丽青4月份做帐太迟，4月份不计算分母分子,剔除分母分子;
 run;
+data contract;
+set approval.contract;
+keep fund_channel_code contract_no;
+run;
+proc sql;
+create table payment_daily as 
+select a.*,b.fund_channel_code from payment_daily_ as a
+left join contract as b on a.contract_no=b.contract_no;
+quit;
 *加上提前结清的流失分母;
 data bill_main;
 set account.bill_main;
@@ -243,7 +252,7 @@ data flow_Denominator;
 set pay_repay_;
 if cut_date^=&l_month_end. and 营业部^="APP";
 if 还款_当日流入15加合同分母=1;
-keep contract_no od_days 营业部 账单日贷款余额15分母  REPAY_DATE cut_date 客户姓名 od_periods;
+keep contract_no od_days 营业部 账单日贷款余额15分母  REPAY_DATE cut_date 客户姓名 od_periods fund_channel_code;
 run;
 %macro eight_overdue;
 proc delete data=eight_overdue;run;
@@ -253,7 +262,7 @@ call symput("n", n);
 run;
 %do i=0 %to &n.;
 data cc(drop=还款_当日扣款失败合同 REPAY_DATE od_days);
-set pay_repay_(keep=CONTRACT_NO od_days 营业部  还款_当日流入15加合同 客户姓名 cut_date REPAY_DATE 还款_当日扣款失败合同 身份证号码 od_periods 账单日贷款余额15分子);
+set pay_repay_(keep=CONTRACT_NO od_days 营业部  还款_当日流入15加合同 客户姓名 cut_date REPAY_DATE 还款_当日扣款失败合同 身份证号码 od_periods 账单日贷款余额15分子 fund_channel_code);
 if 营业部^="APP";
 if 营业部^="";*去除米粒;
 last_oddays=lag(od_days);
@@ -327,11 +336,11 @@ data _null_;set clear_17detail;file DD;put contract_no  营业部 repay_date 还清日
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月流入合同明细!r2c1:r10000c4';
 data _null_;set New_overdue;file DD;put contract_no 客户姓名 营业部 流入日期  ;run;
 
-filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月滑落合同明细!r2c1:r10000c5';
-data _null_;set Eight_overdue;file DD;put contract_no  客户姓名 营业部 流入日期 贷款余额;run;
+filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月滑落合同明细!r2c1:r10000c6';
+data _null_;set Eight_overdue;file DD;put contract_no  客户姓名 营业部 流入日期 贷款余额 fund_channel_code;run;
 
-filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月流失合同分母!r2c1:r10000c5';
-data _null_;set flow_Denominator;file DD;put contract_no  客户姓名 营业部 REPAY_DATE 账单日贷款余额15分母;run;
+filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月流失合同分母!r2c1:r10000c6';
+data _null_;set flow_Denominator;file DD;put contract_no  客户姓名 营业部 REPAY_DATE 账单日贷款余额15分母 fund_channel_code;run;
 
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]c_m1客户明细!r2c1:r10000c6';
 data _null_;set payment_daily(where=((od_days=0 and 还款_当日扣款失败合同=1 and repay_date=cut_date or 1<=od_days<=30) and cut_date =&dt.));
