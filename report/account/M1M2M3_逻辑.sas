@@ -6,7 +6,7 @@
 *结尾有导出文件操作，需在路径处加上;
 
 data macrodate;
-format date  start_date  fk_month_begin month_begin  end_date last_month_end last_month_begin month_end yymmdd10.;*定义时间变量格式;
+format date  start_date  fk_month_begin month_begin  end_date last_month_end last_month_begin llast_month_begin month_end yymmdd10.;*定义时间变量格式;
 if day(today())=1 then date=intnx("month",today(),-1,"end");
 else date=today()-1;
 /*date = mdy(12,31,2017);*/
@@ -21,6 +21,8 @@ last_month_end=intnx("month",date,0,"b")-1;
 call symput("last_month_end",last_month_end);
 last_month_begin=intnx("month",date,-1,"b");
 call symput("last_month_begin",last_month_begin);
+llast_month_begin=intnx("month",date,-2,"b");
+call symput("llast_month_begin",llast_month_begin);
 if day(date)>25 then do; fk_month_begin = mdy(month(date),26,year(date));*当月26-下月25的循环;
 end_date = mdy(month(date)+1,25,year(date));end;
 else do;fk_month_begin = mdy(month(date)-1,26,year(date));
@@ -391,17 +393,21 @@ quit;
 
 proc sql;
 create table aaa2_ as 
-select contract_no ,sum(curr_receipt_amt) as 已还本息
+select contract_no,REPAY_DATE ,sum(curr_receipt_amt) as 已还本息
 from aaa2
-where   &last_month_begin.<=REPAY_DATE<=&month_end.
-group by contract_no;
+where   &llast_month_begin.<=REPAY_DATE<=&month_end.
+group by contract_no,REPAY_DATE;
 quit;
+data aaa2_;
+set aaa2_;
+od_days=intck('day',REPAY_DATE,&dt.);
+run;
 proc sql;
 create table aa_qita as
 select a.*,b.已还本息
 from aa2 as a
 left join aaa2_ as b 
-on a.contract_no=b.contract_no;
+on a.contract_no=b.contract_no and a.od_days=b.od_days;
 quit;
 
 data aa_;
@@ -409,6 +415,7 @@ set aa_js aa_qita;
 if 已还本息>0;
 keep contract_no 客户姓名 已还本息;
 run;
+proc sort data=aa_;by descending 已还本息;run;
 
 
 /*PROC EXPORT DATA=kank_*/
