@@ -31,14 +31,14 @@
 /*getnames=yes;*/
 /*run;*/
 
-%let month="201909";
+%let month="201910";
 
 data vinDDE;
 set repayfin.payment_g;
 format 放款月份1 yymmdd10.;
 放款月份1=intnx("month",loan_date,0,"b");
 if not kindex(产品小类,"米粒");
-if month^="201910";
+if month^="201911";
 run;
 
 proc sql;
