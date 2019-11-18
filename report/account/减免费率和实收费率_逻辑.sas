@@ -166,6 +166,9 @@ if contract_no='C2017091514090396143858' then delete;*超长逾期客户，直接在某期结
 if contract_no='C2017102711541825148769' then delete;*超长逾期客户，直接在某期结清;
 if contract_no='C2017103117570387927819' then delete;*超长逾期客户，直接在某期结清;
 if contract_no='C2018031917184999132507' then delete;*超长逾期客户，直接在某期结清;
+if contract_no='C2016092211595980471090' then delete;*超长逾期客户，直接在某期结清;
+if contract_no='C2016090611544346609938' then delete;*超长逾期客户，直接在某期结清;
+if contract_no='C2018032313294342732282' then delete;*超长逾期客户，直接在某期结清;
 if 应收罚息>1;
 实收罚息=sum(应收罚息,-amount);
 if 实收罚息<0.01 then 实收罚息=0;
