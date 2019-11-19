@@ -633,6 +633,7 @@ if bill_code ="BLC201706171726138271380622" then do;CLEAR_DATE=mdy(5,31,2019);OV
 if bill_code ="BLC201705251642376671911922" then do;CLEAR_DATE=mdy(5,31,2019);OVERDUE_DAYS=68;BILL_STATUS="0000";end;
 if bill_code ="BLC201711171623547007902316" then do;CLEAR_DATE=mdy(5,31,2019);OVERDUE_DAYS=70;BILL_STATUS="0000";end;
 
+if bill_code ="EBL2018071717110307" then delete;*应该是提前结清失败，导致多算已还;
 *月底提前结清的客户;
 if contract_no="C2017080410211770435844" and CURR_PERIOD<8 then do ;CLEAR_DATE=REPAY_DATE;end;
 if contract_no="C2017080410211770435844" and CURR_PERIOD>=8 then do ;CURR_RECEIPT_AMT=CURR_RECEIVE_AMT;CLEAR_DATE=mdy(5,31,2018);BILL_STATUS="0000";end;
@@ -749,6 +750,7 @@ if kindex(资金渠道,"xyd") and  clear_date>0 and offset_date<1 then do;offset_dat
 if bill_code="EBL2018011209071809" then delete;
 if bill_code="EBL2016081614292303" then delete;
 if BILL_CODE='EBL2016110210545002' then delete;*删除提前还款失败的记录;
+if BILL_CODE='EBL2018071717110307' then delete;*删除提前还款失败的记录;
 run;
 proc sort data=bill_fee_dtl;by contract_no FEE_DATE;run;
 
