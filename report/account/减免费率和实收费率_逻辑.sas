@@ -14,7 +14,7 @@
 /*x  "E:\guan\催收报表\逾期豁免\逾期16天以上应收罚息及豁免情况.xlsx"; */
 /*x  "E:\guan\催收报表\逾期豁免\逾期应收罚息及豁免情况.xlsx"; */
 
-%let month="201911";*修改为本月月份;
+%let month="201912";*修改为本月月份;
 
 data null;
 format dt yymmdd10.;
@@ -169,6 +169,9 @@ if contract_no='C2018031917184999132507' then delete;*超长逾期客户，直接在某期结
 if contract_no='C2016092211595980471090' then delete;*超长逾期客户，直接在某期结清;
 if contract_no='C2016090611544346609938' then delete;*超长逾期客户，直接在某期结清;
 if contract_no='C2018032313294342732282' then delete;*超长逾期客户，直接在某期结清;
+if contract_no='C2017103117574036874210' then delete;*超长逾期客户，直接在某期结清;
+if contract_no='C2017112916455167886327' then delete;*超长逾期客户，直接在某期结清;
+if contract_no='C2017121316463024323561' then delete;*超长逾期客户，直接在某期结清;
 if 应收罚息>1;
 实收罚息=sum(应收罚息,-amount);
 if 实收罚息<0.01 then 实收罚息=0;
