@@ -26,7 +26,7 @@ run;
 
 /*%let pde=mdy(12,31,2017);*/
 DATA A;
-FORMAT A YYMMDD10.;
+FORMAT A cut_date YYMMDD10.;
 A=&pde.;
 cut_date =intnx("month",today(),-1,"end");
 RUN;
