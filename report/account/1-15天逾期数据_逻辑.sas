@@ -226,7 +226,7 @@ call symput("n", n);
 run;
 %do i=0 %to &n.;
 data cc(drop=»¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬ REPAY_DATE od_days);
-set payment_daily(keep=CONTRACT_NO od_days ÓªÒµ²¿ ¿Í»§ĞÕÃû cut_date REPAY_DATE »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬ Éí·İÖ¤ºÅÂë);
+set payment_daily(keep=CONTRACT_NO od_days ÓªÒµ²¿ ¿Í»§ĞÕÃû cut_date REPAY_DATE »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬ Éí·İÖ¤ºÅÂë ´û¿îÓà¶î);
 if ÓªÒµ²¿^="APP";
 if ÓªÒµ²¿^="";*È¥³ıÃ×Á£;
 if od_days=0 and »¹¿î_µ±ÈÕ¿Û¿îÊ§°ÜºÏÍ¬=1 and REPAY_DATE=cut_date and cut_date=intnx("day",intnx("month",&dt.,0,"b"),&i.);
@@ -357,8 +357,8 @@ data _null_;set one_seven;file DD;put contract_no ÓªÒµ²¿ ¿Í»§ĞÕÃû repay_date ×Ê½
 filename DD DDE 'EXCEL|[ÓªÒµ²¿1-15ÌìÓâÆÚÊı¾İ.xlsx]Sheet1!r46c1:r1000c4';
 data _null_;set clear_17detail;file DD;put contract_no  ÓªÒµ²¿ repay_date »¹ÇåÈÕ ;run;
 
-filename DD DDE 'EXCEL|[ÓªÒµ²¿1-15ÌìÓâÆÚÊı¾İ.xlsx]±¾ÔÂÁ÷ÈëºÏÍ¬Ã÷Ï¸!r2c1:r10000c4';
-data _null_;set New_overdue;file DD;put contract_no ¿Í»§ĞÕÃû ÓªÒµ²¿ Á÷ÈëÈÕÆÚ  ;run;
+filename DD DDE 'EXCEL|[ÓªÒµ²¿1-15ÌìÓâÆÚÊı¾İ.xlsx]±¾ÔÂÁ÷ÈëºÏÍ¬Ã÷Ï¸!r2c1:r10000c5';
+data _null_;set New_overdue;file DD;put contract_no ¿Í»§ĞÕÃû ÓªÒµ²¿ Á÷ÈëÈÕÆÚ ´û¿îÓà¶î ;run;
 
 filename DD DDE 'EXCEL|[ÓªÒµ²¿1-15ÌìÓâÆÚÊı¾İ.xlsx]±¾ÔÂ»¬ÂäºÏÍ¬Ã÷Ï¸!r2c1:r10000c6';
 data _null_;set Eight_overdue;file DD;put contract_no  ¿Í»§ĞÕÃû ÓªÒµ²¿ Á÷ÈëÈÕÆÚ ´û¿îÓà¶î fund_channel_code;run;
