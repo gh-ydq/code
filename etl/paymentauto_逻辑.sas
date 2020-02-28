@@ -1367,6 +1367,12 @@ if contract_no="C2018052117442350226354" and cut_date=mdy(12,14,2019) then 还款_
 if contract_no="C2018012417040439393879" and cut_date=mdy(12,15,2019) then 还款_当日流入15加合同=0;
 if contract_no="C2018110914123752310465" and cut_date=mdy(12,30,2019) then 还款_当日流入15加合同=0;
 
+if contract_no="C2018052116313472921535" and cut_date=mdy(1,10,2020) then 还款_当日流入15加合同=0;
+if contract_no="C155599743204203000003738" and cut_date=mdy(1,10,2020)  then 还款_当日流入15加合同=0;
+if contract_no="C2018012417040439393879" and cut_date=mdy(1,14,2020) then 还款_当日流入15加合同=0;
+if contract_no="C152886300287003000001109" and cut_date=mdy(1,21,2020) then 还款_当日流入15加合同=0;
+if contract_no="C2018042515475852618770" and cut_date=mdy(1,20,2020) then 还款_当日流入15加合同=0;
+if contract_no="C2018090516090375225034" and cut_date=mdy(1,26,2020) then 还款_当日流入15加合同=0;
 
 
 
