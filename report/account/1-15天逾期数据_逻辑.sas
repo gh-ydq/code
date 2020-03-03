@@ -217,6 +217,18 @@ format 还清日 yymmdd10.;
 还清日=&dt.;
 keep contract_no 营业部 repay_date  还清日 ;
 run;
+proc sql;
+create table pay_repay as 
+select a.*,b.BEGINNING_CAPITAL,b.CURR_RECEIVE_INTEREST_AMT,b.MONTH_SERVICE_FEE from payment_daily as a 
+left join account.repay_plan as b on a.contract_no=b.contract_no and a.repay_date=b.repay_date;
+quit;
+data pay_repay_;
+set pay_repay;
+账单日贷款余额=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE);
+账单日贷款余额15分母=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同分母;
+账单日贷款余额15分子=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同;
+账单日贷款余额7分子=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入7加合同;
+run;
 *累计流入明细;
 %macro new_overdue;
 proc delete data=new_overdue;run;
@@ -226,7 +238,7 @@ call symput("n", n);
 run;
 %do i=0 %to &n.;
 data cc(drop=还款_当日扣款失败合同 REPAY_DATE od_days);
-set payment_daily(keep=CONTRACT_NO od_days 营业部 客户姓名 cut_date REPAY_DATE 还款_当日扣款失败合同 身份证号码 贷款余额);
+set pay_repay_(keep=CONTRACT_NO od_days 营业部 客户姓名 cut_date REPAY_DATE 还款_当日扣款失败合同 身份证号码 账单日贷款余额);
 if 营业部^="APP";
 if 营业部^="";*去除米粒;
 if od_days=0 and 还款_当日扣款失败合同=1 and REPAY_DATE=cut_date and cut_date=intnx("day",intnx("month",&dt.,0,"b"),&i.);
@@ -238,17 +250,6 @@ proc append data=cc base=new_overdue;run;
 %new_overdue;
 /*%let dt=mdy(12,31,2017);*/
 *累计滑落明细;
-proc sql;
-create table pay_repay as 
-select a.*,b.BEGINNING_CAPITAL,b.CURR_RECEIVE_INTEREST_AMT,b.MONTH_SERVICE_FEE from payment_daily as a 
-left join account.repay_plan as b on a.contract_no=b.contract_no and a.repay_date=b.repay_date;
-quit;
-data pay_repay_;
-set pay_repay;
-账单日贷款余额15分母=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同分母;
-账单日贷款余额15分子=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入15加合同;
-账单日贷款余额7分子=sum(BEGINNING_CAPITAL,CURR_RECEIVE_INTEREST_AMT,MONTH_SERVICE_FEE)*还款_当日流入7加合同;
-run;
 data flow_Denominator;
 set pay_repay_;
 if cut_date^=&l_month_end. and 营业部^="APP";
@@ -358,7 +359,7 @@ filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]Sheet1!r46c1:r1000c4';
 data _null_;set clear_17detail;file DD;put contract_no  营业部 repay_date 还清日 ;run;
 
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月流入合同明细!r2c1:r10000c5';
-data _null_;set New_overdue;file DD;put contract_no 客户姓名 营业部 流入日期 贷款余额 ;run;
+data _null_;set New_overdue;file DD;put contract_no 客户姓名 营业部 流入日期 账单日贷款余额 ;run;
 
 filename DD DDE 'EXCEL|[营业部1-15天逾期数据.xlsx]本月滑落合同明细!r2c1:r10000c6';
 data _null_;set Eight_overdue;file DD;put contract_no  客户姓名 营业部 流入日期 贷款余额 fund_channel_code;run;
